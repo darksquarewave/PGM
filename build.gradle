@@ -1,0 +1,28 @@
+group 'java.org.pgm'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+checkstyle {
+    configFile = file('config/checkstyle/checkstyle.xml')
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
