@@ -2,10 +2,7 @@ package pgm.factor.discrete;
 
 import org.junit.Assert;
 import org.junit.Test;
-import pgm.factor.discrete.factor.AssignmentIndex;
-import pgm.factor.discrete.factor.Assignments;
-import pgm.factor.discrete.factor.Factor;
-import pgm.factor.discrete.factor.transformers.ObserveEvidenceTransformer;
+import pgm.factor.discrete.transformers.ObserveEvidenceTransformer;
 
 import java.util.Arrays;
 import java.util.Collections;

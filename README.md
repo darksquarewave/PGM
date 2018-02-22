@@ -1,1 +1,1 @@
-# PGM
+# Probabilistc Graphical Models for Java

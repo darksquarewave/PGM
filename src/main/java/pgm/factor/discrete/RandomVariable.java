@@ -37,8 +37,7 @@ public final class RandomVariable<T extends Comparable<T>> implements Comparable
 
         boolean equals = Objects.equals(id, that.id);
         if (equals && !Objects.equals(cardinality, that.cardinality)) {
-            throw new IllegalStateException(
-                    "Two equal random variables with different dimensions");
+            throw new IllegalStateException("Two equal random variables with different dimensions");
         }
 
         return equals;

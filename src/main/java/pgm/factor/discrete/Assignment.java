@@ -1,4 +1,4 @@
-package pgm.factor.discrete.factor;
+package pgm.factor.discrete;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -6,9 +6,10 @@ import java.util.Objects;
 
 public final class Assignment implements Comparable<Assignment> {
 
+    private static final double EPSILON = 1e-12;
+
     private final AssignmentIndex index;
     private final double value;
-    private static final double EPSILON = 1e-12;
 
     Assignment(final AssignmentIndex i, final double val) {
         this.index = i;
@@ -32,16 +33,16 @@ public final class Assignment implements Comparable<Assignment> {
     }
 
     @Override
-    public boolean equals(@Nullable final Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        Assignment that = (Assignment) o;
+        Assignment that = (Assignment) obj;
 
         return Math.abs(that.value - value) < EPSILON
                 && Objects.equals(index, that.index);

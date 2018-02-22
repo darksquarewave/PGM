@@ -1,8 +1,8 @@
-package pgm.factor.discrete.factor.transformers;
+package pgm.factor.discrete.transformers;
 
-import pgm.factor.discrete.factor.Assignment;
-import pgm.factor.discrete.factor.AssignmentIndex;
-import pgm.factor.discrete.factor.interfaces.AssignmentTransformer;
+import pgm.factor.discrete.Assignment;
+import pgm.factor.discrete.AssignmentIndex;
+import pgm.factor.discrete.interfaces.AssignmentTransformer;
 
 public class ObserveEvidenceTransformer implements AssignmentTransformer {
 

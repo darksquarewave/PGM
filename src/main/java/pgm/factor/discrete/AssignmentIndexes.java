@@ -1,6 +1,4 @@
-package pgm.factor.discrete.factor;
-
-import pgm.factor.discrete.RandomVariable;
+package pgm.factor.discrete;
 
 import java.util.ArrayList;
 import java.util.Collection;

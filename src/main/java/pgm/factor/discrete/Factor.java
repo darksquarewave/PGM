@@ -1,8 +1,7 @@
-package pgm.factor.discrete.factor;
+package pgm.factor.discrete;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
-import pgm.factor.discrete.RandomVariable;
-import pgm.factor.discrete.factor.interfaces.AssignmentTransformer;
+import pgm.factor.discrete.interfaces.AssignmentTransformer;
 
 import java.util.ArrayList;
 import java.util.Arrays;

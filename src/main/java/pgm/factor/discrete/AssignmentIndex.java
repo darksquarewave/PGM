@@ -1,7 +1,6 @@
-package pgm.factor.discrete.factor;
+package pgm.factor.discrete;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
-import pgm.factor.discrete.RandomVariable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,18 +24,15 @@ public final class AssignmentIndex implements Comparable<AssignmentIndex> {
                            final Collection<? extends Integer> indexes) {
 
         if (vars.size() == 0) {
-            throw new IllegalArgumentException(
-                    "Random variables cannot be null");
+            throw new IllegalArgumentException("Random variables cannot be empty");
         }
 
         if (indexes.size() == 0) {
-            throw new IllegalArgumentException(
-                    "Assignment indexes cannot be null");
+            throw new IllegalArgumentException("Assignment indexes cannot be empty");
         }
 
         if (vars.size() != indexes.size()) {
-            throw new IllegalArgumentException(
-                    "Dimensionality mismatch between variables and indexes");
+            throw new IllegalArgumentException("Dimensionality mismatch between variables and indexes");
         }
 
         Map<RandomVariable, Integer> map = new LinkedHashMap<>();
@@ -78,8 +74,7 @@ public final class AssignmentIndex implements Comparable<AssignmentIndex> {
     }
 
     public AssignmentIndex remove(final Set<? extends RandomVariable> vars) {
-        Map<RandomVariable, Integer> map = new LinkedHashMap<>(
-                varToAssignmentMap);
+        Map<RandomVariable, Integer> map = new LinkedHashMap<>(varToAssignmentMap);
         map.keySet().removeAll(vars);
 
         return new AssignmentIndex(map.keySet(), map.values());
@@ -105,16 +100,16 @@ public final class AssignmentIndex implements Comparable<AssignmentIndex> {
     }
 
     @Override
-    public boolean equals(@Nullable final Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        AssignmentIndex that = (AssignmentIndex) o;
+        AssignmentIndex that = (AssignmentIndex) obj;
 
         return Objects.equals(varToAssignmentMap, that.varToAssignmentMap);
     }
