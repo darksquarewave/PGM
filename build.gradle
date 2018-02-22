@@ -45,13 +45,18 @@ allprojects {
   }
 }
 
-tasks.withType(Checkstyle) {
-    configFile file('config/checkstyle/checkstyle.xml')
+checkstyle {
+  configFile file('config/checkstyle/checkstyle.xml')
 }
 
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
+findbugsMain {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
 }
+
+pmd {
+  ruleSetFiles = files("config/pmd/pmd.xml")
+}
+

@@ -62,7 +62,7 @@ public final class Factor {
     }
 
     public Factor(final Collection<? extends Assignment> assignmentColl) {
-        if (assignmentColl.size() == 0) {
+        if (assignmentColl.isEmpty()) {
             throw new IllegalArgumentException("Assignments cannot be empty");
         }
 
@@ -152,7 +152,7 @@ public final class Factor {
     }
 
     public Factor marginalize(final Set<? extends RandomVariable> margVars) {
-        if (margVars.size() == 0) {
+        if (margVars.isEmpty()) {
             throw new IllegalArgumentException("Marginalization variables cannot be emtpy");
         }
 

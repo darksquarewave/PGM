@@ -13,7 +13,7 @@ public final class Assignments {
     public static Collection<Assignment> of(final Set<? extends RandomVariable> randomVariables,
                                             final Collection<? extends Double> values) {
 
-        if (randomVariables.size() == 0) {
+        if (randomVariables.isEmpty()) {
             throw new IllegalArgumentException("Random variables cannot be empty");
         }
 

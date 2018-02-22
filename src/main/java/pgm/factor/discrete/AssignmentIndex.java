@@ -20,14 +20,14 @@ public final class AssignmentIndex implements Comparable<AssignmentIndex> {
 
     private final Map<? extends RandomVariable, Integer> varToAssignmentMap;
 
-    public AssignmentIndex(final Set<? extends RandomVariable> vars,
-                           final Collection<? extends Integer> indexes) {
+    AssignmentIndex(final Set<? extends RandomVariable> vars,
+                    final Collection<? extends Integer> indexes) {
 
-        if (vars.size() == 0) {
+        if (vars.isEmpty()) {
             throw new IllegalArgumentException("Random variables cannot be empty");
         }
 
-        if (indexes.size() == 0) {
+        if (indexes.isEmpty()) {
             throw new IllegalArgumentException("Assignment indexes cannot be empty");
         }
 
@@ -81,7 +81,7 @@ public final class AssignmentIndex implements Comparable<AssignmentIndex> {
     }
 
     public AssignmentIndex sort() {
-        Map<? extends RandomVariable, Integer> map = new TreeMap<>(varToAssignmentMap);
+        Map<RandomVariable, Integer> map = new TreeMap<>(varToAssignmentMap);
         return new AssignmentIndex(map.keySet(), map.values());
     }
 

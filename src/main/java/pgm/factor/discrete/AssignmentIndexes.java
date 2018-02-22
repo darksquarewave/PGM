@@ -11,7 +11,7 @@ public final class AssignmentIndexes {
     }
 
     static int card(final Set<? extends RandomVariable> randomVariables) {
-        if (randomVariables.size() == 0) {
+        if (randomVariables.isEmpty()) {
             throw new IllegalArgumentException("Random variables cannot be empty");
         }
 
@@ -43,7 +43,7 @@ public final class AssignmentIndexes {
     }
 
     public static Collection<AssignmentIndex> of(final Set<? extends RandomVariable> randomVariables) {
-        if (randomVariables.size() == 0) {
+        if (randomVariables.isEmpty()) {
             throw new IllegalArgumentException("Variables cannot be empty");
         }
 
