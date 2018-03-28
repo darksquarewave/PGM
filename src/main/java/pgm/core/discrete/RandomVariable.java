@@ -47,6 +47,10 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
         public Set<? extends RandomVariable> toSet() {
             return new LinkedHashSet<>(items());
         }
+
+        public List<? extends RandomVariable> toList() {
+            return new ArrayList<>(items());
+        }
     }
 
     public static final class IdBuilder {
@@ -75,28 +79,13 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
             return new RandomVarBuilder<>(id, events);
         }
 
-        public <E> RandomVarBuilder<T, E> events(final E e0, final E e1) {
-            return new RandomVarBuilder<>(id, Arrays.asList(e0, e1));
-        }
-
-        public <E> RandomVarBuilder<T, E> events(final E e0, final E e1, final E e2) {
-            return new RandomVarBuilder<>(id, Arrays.asList(e0, e1, e2));
-        }
-
-        public <E> RandomVarBuilder<T, E> events(final E e0, final E e1, final E e2, final E e3) {
-            return new RandomVarBuilder<>(id, Arrays.asList(e0, e1, e2, e3));
-        }
-
-        public <E> RandomVarBuilder<T, E> events(final E e0, final E e1, final E e2, final E e3, final E e4) {
-            return new RandomVarBuilder<>(id, Arrays.asList(e0, e1, e2, e3, e4));
-        }
-
         @SafeVarargs
-        public final <E> RandomVarBuilder<T, E> events(final E e0, final E e1, final E e2, final E e3, final E e4,
-                                                       final E ... rest) {
-            List<E> events = Arrays.asList(e0, e1, e2, e3, e4);
-            events.addAll(Arrays.asList(rest));
-
+        public final <E> RandomVarBuilder<T, E> events(final E e0, final E ... rest) {
+            List<E> events = new ArrayList<>();
+            events.add(e0);
+            if (rest.length > 0) {
+                events.addAll(Arrays.asList(rest));
+            }
             return new RandomVarBuilder<>(id, events);
         }
 

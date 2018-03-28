@@ -10,12 +10,8 @@ public final class EvidenceTransformer implements Function<Assignment, Assignmen
 
     private final VariableGroupAssignment evidences;
 
-    public static EvidenceTransformer of(final VariableGroupAssignment evidences) {
-        return new EvidenceTransformer(evidences);
-    }
-
-    public EvidenceTransformer(final VariableGroupAssignment evidencesColl) {
-        evidences = evidencesColl;
+    public EvidenceTransformer(final VariableGroupAssignment varGroupAssignment) {
+        evidences = varGroupAssignment;
     }
 
     @Override

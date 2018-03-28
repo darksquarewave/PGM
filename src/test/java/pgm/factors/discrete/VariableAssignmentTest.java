@@ -1,4 +1,4 @@
-package pgm.factors;
+package pgm.factors.discrete;
 
 import org.junit.Assert;
 import org.junit.Test;

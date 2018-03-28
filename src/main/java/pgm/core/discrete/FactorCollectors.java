@@ -3,7 +3,11 @@ package pgm.core.discrete;
 import pgm.factors.discrete.CPD;
 import pgm.factors.discrete.Factor;
 import pgm.factors.discrete.JointDistribution;
+import pgm.models.BayesianModel;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -17,50 +21,77 @@ public final class FactorCollectors {
     private FactorCollectors() {
     }
 
-    private static class AssignmentCollector<E extends AbstractAssignmentSet> implements
-            Collector<Assignment, AbstractAssignmentSet.AbstractBuilder<E>, E> {
+    static final class CollectorImpl<T, A, R> implements Collector<T, A, R> {
 
-        private final Supplier<AbstractAssignmentSet.AbstractBuilder<E>> builderSupplier;
+        private final Supplier<A> supplier;
+        private final BiConsumer<A, T> accumulator;
+        private final BinaryOperator<A> combiner;
+        private final Function<A, R> finisher;
+        private final Set<Characteristics> characteristics;
 
-        AssignmentCollector(final Supplier<AbstractAssignmentSet.AbstractBuilder<E>> suppler) {
-            this.builderSupplier = suppler;
+        CollectorImpl(final Supplier<A> inputSupplier,
+                      final BiConsumer<A, T> inputAccumulator,
+                      final BinaryOperator<A> inputCombiner,
+                      final Function<A, R> inputFinisher,
+                      final Set<Characteristics> inputCharacteristics) {
+
+            supplier = inputSupplier;
+            accumulator = inputAccumulator;
+            combiner = inputCombiner;
+            finisher = inputFinisher;
+            characteristics = inputCharacteristics;
         }
 
         @Override
-        public Supplier<AbstractAssignmentSet.AbstractBuilder<E>> supplier() {
-            return builderSupplier;
+        public Supplier<A> supplier() {
+            return supplier;
         }
 
         @Override
-        public BiConsumer<AbstractAssignmentSet.AbstractBuilder<E>, Assignment> accumulator() {
-            return AbstractAssignmentSet.AbstractBuilder::add;
+        public BiConsumer<A, T> accumulator() {
+            return accumulator;
         }
 
         @Override
-        public BinaryOperator<AbstractAssignmentSet.AbstractBuilder<E>> combiner() {
-            return AbstractAssignmentSet.AbstractBuilder::combine;
+        public BinaryOperator<A> combiner() {
+            return combiner;
         }
 
         @Override
-        public Function<AbstractAssignmentSet.AbstractBuilder<E>, E> finisher() {
-            return AbstractAssignmentSet.AbstractBuilder::build;
+        public Function<A, R> finisher() {
+            return finisher;
         }
 
         @Override
         public Set<Characteristics> characteristics() {
-            return EnumSet.of(Characteristics.UNORDERED);
+            return characteristics;
         }
     }
 
-    public static AssignmentCollector<JointDistribution> toJoint() {
-        return new AssignmentCollector<>(JointDistribution.Builder::new);
+    private static <T, R> Collector<T, Collection<T>, R> collector(final Function<Collection<T>, R> finisher) {
+        return new CollectorImpl<>(ArrayList::new,
+                Collection::add,
+                (r1, r2) -> {
+                    r1.addAll(r2);
+                    return r2;
+                },
+                finisher,
+                Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.UNORDERED)));
     }
 
-    public static AssignmentCollector<CPD> toCPD() {
-        return new AssignmentCollector<>(CPD.Builder::new);
+    public static Collector<Assignment, Collection<Assignment>, CPD> toCPD() {
+        return collector(CPD::build);
     }
 
-    public static AssignmentCollector<Factor> toFactor() {
-        return new AssignmentCollector<>(Factor.Builder::new);
+    public static Collector<Assignment, Collection<Assignment>, Factor> toFactor() {
+        return collector(Factor::build);
+    }
+
+    public static Collector<Assignment, Collection<Assignment>, JointDistribution> toJoint() {
+        return collector(JointDistribution::build);
+    }
+
+    public static Collector<CPD, Collection<CPD>, BayesianModel> toBayesianModel() {
+        return collector(BayesianModel::build);
     }
 }

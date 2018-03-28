@@ -1,11 +1,13 @@
 package pgm.factors.discrete.functions.queries;
 
 import pgm.core.discrete.Assignment;
+import pgm.core.discrete.AssignmentOperations;
 import pgm.core.discrete.VariableAssignment;
 import pgm.core.discrete.VariableGroupAssignment;
 import pgm.factors.discrete.functions.transformers.EvidenceTransformer;
-import pgm.factors.discrete.functions.transformers.NormalizationTransformer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -30,15 +32,20 @@ public final class ProbabilityQuery implements Function<Stream<? extends Assignm
     public static final class EvidenceBuilder {
 
         private final VariableAssignment targetAssignment;
-        private VariableGroupAssignment evidenceAssignments;
+        private final List<VariableAssignment> evidenceAssignments;
 
         EvidenceBuilder(final VariableAssignment assignment) {
             targetAssignment = assignment;
-            evidenceAssignments = VariableGroupAssignment.emptyAssignment();
+            evidenceAssignments = new ArrayList<>();
         }
 
-        public EvidenceBuilder evidence(final VariableGroupAssignment evidences) {
-            this.evidenceAssignments = evidences;
+        public EvidenceBuilder evidences(final VariableGroupAssignment evidences) {
+            this.evidenceAssignments.addAll(evidences.assignments());
+            return this;
+        }
+
+        public EvidenceBuilder evidence(final VariableAssignment evidence) {
+            this.evidenceAssignments.add(evidence);
             return this;
         }
 
@@ -49,17 +56,15 @@ public final class ProbabilityQuery implements Function<Stream<? extends Assignm
 
     private ProbabilityQuery(final EvidenceBuilder builder) {
         target = builder.targetAssignment;
-        evidences = builder.evidenceAssignments;
+        evidences = VariableGroupAssignment.of(builder.evidenceAssignments);
     }
 
     @Override
     public Double apply(final Stream<? extends Assignment> assignments) {
-        return Stream.of(assignments)
-            .map(NormalizationTransformer.instance())
-            .flatMap(Function.identity())
-            .map(EvidenceTransformer.of(evidences))
-            .filter(a -> a.varAssignments().contains(target))
-            .mapToDouble(Assignment::value)
-            .sum();
+        return assignments.map(new EvidenceTransformer(evidences))
+                .collect(AssignmentOperations.renormalize())
+                .filter(a -> a.varAssignments().contains(target))
+                .mapToDouble(Assignment::value)
+                .sum();
     }
 }

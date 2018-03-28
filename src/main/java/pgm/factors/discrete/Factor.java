@@ -2,30 +2,24 @@ package pgm.factors.discrete;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import pgm.core.discrete.Assignment;
+import pgm.core.discrete.AssignmentOperations;
 import pgm.core.discrete.FactorCollectors;
-import pgm.core.discrete.AbstractAssignmentSet;
+import pgm.core.discrete.ImmutableAssignmentSet;
 import pgm.core.discrete.RandomVariable;
 import pgm.core.discrete.VariableAssignment;
 import pgm.core.discrete.VariableGroupAssignment;
-import pgm.factors.discrete.functions.operations.FactorProduct;
 import pgm.factors.discrete.functions.transformers.EvidenceTransformer;
-import pgm.factors.discrete.functions.transformers.MarginalizationTransformer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class Factor extends AbstractAssignmentSet {
+public final class Factor extends ImmutableAssignmentSet {
 
-    public static final class Builder extends AbstractAssignmentSet.AbstractBuilder<Factor> {
-
-        @Override
-        public Factor build() {
-            return new Factor(assignments());
-        }
+    public static Factor build(final Collection<Assignment> assignments) {
+        return new Factor(assignments);
     }
 
     private Factor(final Collection<? extends Assignment> assignments) {
@@ -44,42 +38,50 @@ public final class Factor extends AbstractAssignmentSet {
         return product(Arrays.asList(this, f));
     }
 
-    public Factor product(final Factor f1, final Factor f2) {
-        return product(Arrays.asList(this, f1, f2));
+    public static Factor product(final Factor f0, final Factor ... rest) {
+        ArrayList<Factor> factors = new ArrayList<>();
+        factors.add(f0);
+        if (rest.length > 0) {
+            factors.addAll(Arrays.asList(rest));
+        }
+        return product(factors);
     }
 
-    public static Factor product(final Collection<? extends Factor> operands) {
-        return new FactorProduct().apply(operands).collect(FactorCollectors.toFactor());
+    public static Factor product(final Collection<? extends Factor> factors) {
+        if (factors.size() < 2) {
+            throw new IllegalArgumentException("Invalid count of factors");
+        }
+
+        return factors.stream()
+                .flatMap(factor -> factor.assignments().stream())
+                .collect(AssignmentOperations.product())
+                .collect(FactorCollectors.toFactor());
     }
 
     public Factor marginalize(final RandomVariable var0, final RandomVariable ... rest) {
         ArrayList<RandomVariable> vars = new ArrayList<>();
         vars.add(var0);
+
         if (rest.length > 0) {
             vars.addAll(Arrays.asList(rest));
         }
+
         return marginalize(vars);
     }
 
     public Factor marginalize(final Collection<? extends RandomVariable> margVars) {
-        return MarginalizationTransformer.of(margVars)
-                .apply(stream())
-                .collect(FactorCollectors.toFactor());
-    }
-
-    public Factor marginalize(final Set<? extends RandomVariable> marginalizationVars) {
-        return MarginalizationTransformer.of(marginalizationVars)
-                .apply(stream())
+        return this.assignments().stream()
+                .collect(AssignmentOperations.marginalize(margVars))
                 .collect(FactorCollectors.toFactor());
     }
 
     public Factor observeEvidence(final VariableAssignment singleEvidence) {
-        return stream().map(EvidenceTransformer.of(singleEvidence.toGroupAssignment()))
+        return stream().map(new EvidenceTransformer(singleEvidence.toGroupAssignment()))
                 .collect(FactorCollectors.toFactor());
     }
 
     public Factor observeEvidence(final VariableGroupAssignment groupEvidence) {
-        return stream().map(EvidenceTransformer.of(groupEvidence))
+        return stream().map(new EvidenceTransformer(groupEvidence))
                 .collect(FactorCollectors.toFactor());
     }
 

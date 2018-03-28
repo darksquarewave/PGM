@@ -38,7 +38,7 @@ public final class VariableAssignment<T extends Comparable<T>, E> implements Ser
         }
 
         public VariableGroupAssignment toGroupAssignment() {
-            return new VariableGroupAssignment(items());
+            return VariableGroupAssignment.of(items());
         }
 
         public Assignment toAssignment(final double value) {
@@ -47,7 +47,7 @@ public final class VariableAssignment<T extends Comparable<T>, E> implements Ser
     }
 
     public VariableGroupAssignment toGroupAssignment() {
-        return new VariableGroupAssignment(Collections.singletonList(this));
+        return VariableGroupAssignment.of(Collections.singletonList(this));
     }
 
     public Assignment toAssignment(final double value) {

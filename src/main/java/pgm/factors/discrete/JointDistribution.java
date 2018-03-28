@@ -2,20 +2,16 @@ package pgm.factors.discrete;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import pgm.core.discrete.Assignment;
-import pgm.core.discrete.AbstractAssignmentSet;
+import pgm.core.discrete.ImmutableAssignmentSet;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-public final class JointDistribution extends AbstractAssignmentSet {
+public final class JointDistribution extends ImmutableAssignmentSet {
 
-    public static final class Builder extends AbstractAssignmentSet.AbstractBuilder<JointDistribution> {
-
-        @Override
-        public JointDistribution build() {
-            return new JointDistribution(assignments());
-        }
+    public static JointDistribution build(final Collection<Assignment> assignments) {
+        return new JointDistribution(assignments);
     }
 
     private JointDistribution(final Collection<? extends Assignment> assignmentsColl) {

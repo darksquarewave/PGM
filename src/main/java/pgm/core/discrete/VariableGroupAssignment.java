@@ -40,7 +40,7 @@ public final class VariableGroupAssignment implements Comparable<VariableGroupAs
         index = calculateIndex(varToAssignments.values());
     }
 
-    VariableGroupAssignment(final Collection<? extends VariableAssignment> assignments) {
+    private VariableGroupAssignment(final Collection<? extends VariableAssignment> assignments) {
         if (assignments.isEmpty()) {
             throw new IllegalArgumentException("Var assignments cannot be empty");
         }
@@ -52,6 +52,14 @@ public final class VariableGroupAssignment implements Comparable<VariableGroupAs
 
         varToAssignmentMap = Collections.unmodifiableMap(map);
         index = calculateIndex(assignments);
+    }
+
+    public static VariableGroupAssignment of(final Collection<? extends VariableAssignment> evidenceAssignments) {
+        if (evidenceAssignments.isEmpty()) {
+            return VariableGroupAssignment.emptyAssignment();
+        } else {
+            return new VariableGroupAssignment(evidenceAssignments);
+        }
     }
 
     private static int calculateIndex(final Collection<? extends VariableAssignment> assignments) {
@@ -103,7 +111,7 @@ public final class VariableGroupAssignment implements Comparable<VariableGroupAs
         mapA.keySet().retainAll(varToAssignmentMap.keySet());
 
         Map<RandomVariable, VariableAssignment> mapB = new LinkedHashMap<>(varToAssignmentMap);
-        mapB.keySet().retainAll(varToAssignmentMap.keySet());
+        mapB.keySet().retainAll(group.varToAssignmentMap.keySet());
 
         return mapA.equals(mapB);
     }
@@ -145,4 +153,5 @@ public final class VariableGroupAssignment implements Comparable<VariableGroupAs
 
         return "VariableGroupAssignment(" + result + ")";
     }
+
 }

@@ -3,7 +3,9 @@ package pgm.core.discrete;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterators;
@@ -13,56 +15,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public abstract class AbstractAssignmentSet {
+public class ImmutableAssignmentSet {
 
     private final Set<? extends Assignment> assignments;
-    private final Set<? extends RandomVariable> randomVariables;
+    private final List<? extends RandomVariable> randomVariables;
 
-    public abstract static class AbstractBuilder<E> {
-
-        private final Collection<Assignment> assignments;
-
-        public AbstractBuilder() {
-            assignments = new ArrayList<>();
-        }
-
-        public final AbstractBuilder<E> add(final Assignment element) {
-            assignments.add(element);
-            return this;
-        }
-
-        public final AbstractBuilder<E> combine(final AbstractBuilder<E> builder) {
-            assignments.addAll(builder.assignments);
-            return this;
-        }
-
-        public final Collection<Assignment> assignments() {
-            return assignments;
-        }
-
-        public abstract E build();
+    protected ImmutableAssignmentSet(final Collection<? extends Assignment> input) {
+        assignments = Collections.unmodifiableSet(new TreeSet<>(input));
+        randomVariables = Collections.unmodifiableList(varList(assignments));
+        validate(assignments, randomVariables);
     }
 
-    protected AbstractAssignmentSet(final Collection<? extends Assignment> assignmentsColl) {
-        assignments = Collections.unmodifiableSet(new TreeSet<>(assignmentsColl));
-        validate(assignments);
+    private static void validate(final Set<? extends Assignment> assignments,
+                                 final List<? extends RandomVariable> randomVariables) {
 
-        this.randomVariables = Collections.unmodifiableSet(getRandomVariables(assignments));
-    }
-
-    private static void validate(final Set<? extends Assignment> assignments) {
         if (assignments.isEmpty()) {
             throw new IllegalArgumentException("Assignments cannot be empty");
         }
 
-        Set<? extends RandomVariable> randomVariables = getRandomVariables(assignments);
-
-        boolean hasSameVariables = assignments.stream()
-                .map(assignment -> assignment.varAssignments().randomVariables())
-                .allMatch(randomVariables::equals);
-
-        if (!hasSameVariables) {
-            throw new IllegalArgumentException("Random variables mismatch, cannot construct factor");
+        Set<RandomVariable> varSet = new HashSet<>(randomVariables);
+        if (varSet.size() != randomVariables.size()) {
+            throw new IllegalArgumentException("Duplicates in random variables detected");
         }
 
         Collection<VariableGroupAssignment> groupAssignments = VariableGroupAssignments.of(randomVariables);
@@ -77,9 +50,11 @@ public abstract class AbstractAssignmentSet {
         }
     }
 
-    private static Set<? extends RandomVariable> getRandomVariables(final Set<? extends Assignment> assignments) {
-        Assignment first = assignments.iterator().next();
-        return first.varAssignments().randomVariables();
+    protected static List<RandomVariable> varList(final Collection<? extends Assignment> assignments) {
+        Assignment assignment = assignments.iterator().next();
+        VariableGroupAssignment groupAssignments = assignment.varAssignments();
+
+        return new ArrayList<>(groupAssignments.randomVariables());
     }
 
     public final int cardinality() {
@@ -110,7 +85,7 @@ public abstract class AbstractAssignmentSet {
         return assignments;
     }
 
-    public final Set<? extends RandomVariable> randomVariables() {
+    public final List<? extends RandomVariable> randomVariables() {
         return randomVariables;
     }
 

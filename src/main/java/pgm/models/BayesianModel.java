@@ -1,92 +1,73 @@
 package pgm.models;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import pgm.core.discrete.RandomVariable;
+import pgm.factors.discrete.CPD;
+import pgm.graph.DirectedGraph;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public final class BayesianModel {
-//
-//    private final DirectedGraph<TabularCPD> graph;
-//
-//    private static class BayeseianModelCollector
-//            implements Collector<TabularCPD, Collection<TabularCPD>, BayesianModel> {
-//
-//        @Override
-//        public Supplier<Collection<TabularCPD>> supplier() {
-//            return ArrayList::new;
-//        }
-//
-//        @Override
-//        public BiConsumer<Collection<TabularCPD>, TabularCPD> accumulator() {
-//            return Collection::add;
-//        }
-//
-//        @Override
-//        public BinaryOperator<Collection<TabularCPD>> combiner() {
-//            return (coll1, coll2) -> {
-//                coll1.addAll(coll2);
-//                return coll1;
-//            };
-//        }
-//
-//        @Override
-//        public Function<Collection<TabularCPD>, BayesianModel> finisher() {
-//            return BayesianModel::new;
-//        }
-//
-//        @Override
-//        public Set<Characteristics> characteristics() {
-//            return Collections.emptySet();
-//        }
-//    }
-//
-//    public BayesianModel(Collection<TabularCPD> tabularCPDs) {
-//        this.graph = buildGraph(tabularCPDs);
-//    }
-//
-//    public static BayeseianModelCollector collector() {
-//        return new BayeseianModelCollector();
-//    }
-//
-//    private static DirectedGraph<TabularCPD> buildGraph(Collection<TabularCPD> tabularCPDs) {
-//        DirectedGraph.Builder<TabularCPD> builder = new DirectedGraph.Builder<>();
-//
-//        List<TabularCPD> sortedCPDs = tabularCPDs.stream()
-//                .sorted(Comparator.comparingInt(o -> o.conditioningVariables().size()))
-//                .collect(Collectors.toList());
-//
-//        Map<RandomVariable, TabularCPD> varToCPD = new HashMap<>();
-//        for (TabularCPD tabularCPD : sortedCPDs) {
-//            builder.vertex(tabularCPD);
-//            varToCPD.put(tabularCPD.randomVariable(), tabularCPD);
-//        }
-//
-//        for (TabularCPD tabularCPD : sortedCPDs) {
-//            for (RandomVariable condVar : tabularCPD.conditioningVariables()) {
-//                TabularCPD parentCPD = varToCPD.get(condVar);
-//                if (parentCPD == null) {
-//                    throw new IllegalStateException("Invalid CPD structure, cannot build the graph");
-//                }
-//                builder.edge(parentCPD, tabularCPD);
-//            }
-//        }
-//
-//        return builder.build();
-//    }
-//
-//    @Override
-//    public boolean equals(@Nullable final Object obj) {
-//        if (this == obj) {
-//            return true;
-//        }
-//
-//        if (obj == null || getClass() != obj.getClass()) {
-//            return false;
-//        }
-//
-//        BayesianModel model = (BayesianModel) obj;
-//
-//        return Objects.equals(graph, model.graph);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(graph);
-//    }
+
+    private final DirectedGraph<CPD> graph;
+
+    public static BayesianModel build(final Collection<CPD> tabularCPDs) {
+        return new BayesianModel(tabularCPDs);
+    }
+
+    private BayesianModel(final Collection<CPD> tabularCPDs) {
+        this.graph = buildGraph(tabularCPDs);
+    }
+
+    private static DirectedGraph<CPD> buildGraph(final Collection<CPD> tabularCPDs) {
+        DirectedGraph.Builder<CPD> builder = new DirectedGraph.Builder<>();
+
+        List<CPD> sortedCPDs = tabularCPDs.stream()
+                .sorted(Comparator.comparingInt(o -> o.conditioningVariables().size()))
+                .collect(Collectors.toList());
+
+        Map<RandomVariable, CPD> varToCPD = new HashMap<>();
+        for (CPD tabularCPD : sortedCPDs) {
+            builder.vertex(tabularCPD);
+            varToCPD.put(tabularCPD.randomVariable(), tabularCPD);
+        }
+
+        for (CPD tabularCPD : sortedCPDs) {
+            for (RandomVariable condVar : tabularCPD.conditioningVariables()) {
+                CPD parentCPD = varToCPD.get(condVar);
+                if (parentCPD == null) {
+                    throw new IllegalStateException("Invalid CPD structure, cannot build the graph");
+                }
+                builder.edge(parentCPD, tabularCPD);
+            }
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        BayesianModel model = (BayesianModel) obj;
+
+        return Objects.equals(graph, model.graph);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(graph);
+    }
 }

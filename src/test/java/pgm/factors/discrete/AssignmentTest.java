@@ -1,9 +1,8 @@
-package pgm.factors;
+package pgm.factors.discrete;
 
 import org.junit.Assert;
 import org.junit.Test;
 import pgm.core.discrete.RandomVariable;
-import pgm.factors.discrete.Factor;
 
 public class AssignmentTest {
 

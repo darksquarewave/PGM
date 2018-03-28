@@ -28,7 +28,6 @@ public final class VariableGroupAssignments {
     }
 
     private static Collection<VariableGroupAssignment> construct(final Collection<? extends RandomVariable> vars) {
-
         if (vars.isEmpty()) {
             throw new IllegalArgumentException("Empty random variables");
         }
@@ -50,7 +49,7 @@ public final class VariableGroupAssignments {
                 varAssignments.add(variable.setIndex((i / cumulativeProduct) % variable.cardinality()));
             }
 
-            assignmentGroups.add(new VariableGroupAssignment(varAssignments));
+            assignmentGroups.add(VariableGroupAssignment.of(varAssignments));
         }
 
         return assignmentGroups;
