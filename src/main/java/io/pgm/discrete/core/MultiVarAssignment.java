@@ -1,11 +1,13 @@
 package io.pgm.discrete.core;
 
+import com.google.common.collect.Iterables;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//todo: merge this class with varassignment
 public final class MultiVarAssignment implements Comparable<MultiVarAssignment>, Serializable {
 
     private static final long serialVersionUID = -2373257928740712783L;
@@ -25,14 +26,16 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
         this(builder.varAssignments);
     }
 
-    MultiVarAssignment(final Collection<? extends VarAssignment> varAssignments) {
-        if (varAssignments.isEmpty()) {
+    MultiVarAssignment(final Iterable<? extends VarAssignment> varAssignments) {
+        Iterator<? extends VarAssignment> iterator = varAssignments.iterator();
+        if (!iterator.hasNext()) {
             throw new IllegalArgumentException();
         }
 
         Map<RandomVariable, VarAssignment> map = new LinkedHashMap<>();
 
-        for (VarAssignment varAssignment : varAssignments) {
+        while (iterator.hasNext()) {
+            VarAssignment varAssignment = iterator.next();
             map.put(varAssignment.randomVariable(), varAssignment);
         }
 
@@ -69,8 +72,16 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
         return new MultiVarAssignment(excluded);
     }
 
-    public Optional<VarAssignment> varAssignment(final RandomVariable randomVariable) {
+    public Optional<VarAssignment> get(final RandomVariable randomVariable) {
         return Optional.ofNullable(assignments.get(randomVariable));
+    }
+
+    public MultiVarAssignment and(final MultiVarAssignment varAssignment) {
+        return new MultiVarAssignment(Iterables.concat(assignments.values(), varAssignment.assignments()));
+    }
+
+    public MultiVarAssignment and(final VarAssignment varAssignment) {
+        return new MultiVarAssignment(Iterables.concat(assignments.values(), Collections.singletonList(varAssignment)));
     }
 
     public Collection<? extends VarAssignment> assignments() {
@@ -119,32 +130,9 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
         return new Builder();
     }
 
-//    public boolean intersects(final VarAssignment varAssignment) {
-//        assignments.values().con
-//        for (Map.Entry<RandomVariable, VarAssignment> entry : assignments.entrySet()) {
-//            if (varAssignment.assignments.entrySet().contains(entry)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
 
-    public boolean intersects(final MultiVarAssignment multiVarAssignment) {
-        for (Map.Entry<RandomVariable, VarAssignment> entry : assignments.entrySet()) {
-            if (multiVarAssignment.assignments.entrySet().contains(entry)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean contains(final Collection<? extends RandomVariable> randomVariables) {
-        return assignments.keySet().containsAll(randomVariables);
-    }
-
-    public boolean contains(final MultiVarAssignment multiVarAssignment) {
-        return assignments.entrySet().containsAll(multiVarAssignment.assignments.entrySet());
+    public boolean contains(final MultiVarAssignment subAssignment) {
+        return assignments.entrySet().containsAll(subAssignment.assignments.entrySet());
     }
 
     public boolean contains(final VarAssignment varAssignment) {

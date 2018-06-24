@@ -3,9 +3,7 @@ package io.pgm.discrete.core;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class VarAssignment<T extends Comparable<T>, E> implements Serializable,
@@ -19,14 +17,6 @@ public final class VarAssignment<T extends Comparable<T>, E> implements Serializ
     VarAssignment(final RandomVariable<T, E> assignmentVar, final E assignmentEvent) {
         randomVariable = assignmentVar;
         event = assignmentEvent;
-    }
-
-    public MultiVarAssignment toMultiAssignment() {
-        return new MultiVarAssignment(Collections.singletonList(this));
-    }
-
-    public Assignment toAssignment(final double value) {
-        return toMultiAssignment().toAssignment(value);
     }
 
     public RandomVariable<T, E> randomVariable() {
@@ -50,8 +40,8 @@ public final class VarAssignment<T extends Comparable<T>, E> implements Serializ
         throw new AssertionError("Target event is not in the event space");
     }
 
-    public JoiningBuilder and(final VarAssignment varAssignment) {
-        return new JoiningBuilder(this).and(varAssignment);
+    public MultiVarAssignment and(final VarAssignment varAssignment) {
+        return new MultiVarAssignment(Arrays.asList(this, varAssignment));
     }
 
     @Override
@@ -83,28 +73,6 @@ public final class VarAssignment<T extends Comparable<T>, E> implements Serializ
     @Override
     public String toString() {
         return "VariableAssignment(" + randomVariable.id() + "=" + event + ")";
-    }
-
-    public static final class JoiningBuilder {
-
-        private final List<VarAssignment> varAssignments = new ArrayList<>();
-
-        private JoiningBuilder(final VarAssignment varAssignment) {
-            varAssignments.add(varAssignment);
-        }
-
-        public JoiningBuilder and(final VarAssignment varAssignment) {
-            varAssignments.add(varAssignment);
-            return this;
-        }
-
-        public MultiVarAssignment toMultiAssignment() {
-            return new MultiVarAssignment(varAssignments);
-        }
-
-        public Assignment toAssignment(final double value) {
-            return new MultiVarAssignment(varAssignments).toAssignment(value);
-        }
     }
 }
 

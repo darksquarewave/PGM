@@ -85,11 +85,6 @@ public final class DefaultAssignmentStream implements AssignmentStream {
     }
 
     @Override
-    public AssignmentStream evidence(final VarAssignment evidence) {
-        return evidence(evidence.toMultiAssignment());
-    }
-
-    @Override
     public AssignmentStream evidence(final MultiVarAssignment evidence) {
         return new DefaultAssignmentStream(map(assignment -> {
 //todo: add test

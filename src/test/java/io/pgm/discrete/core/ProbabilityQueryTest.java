@@ -105,7 +105,7 @@ public class ProbabilityQueryTest {
             letterAssignments).product();
     }
 
-    private double eventProbability(final VarAssignment event, final MultiVarAssignment evidences) {
+    private double eventProbability(final MultiVarAssignment event, final MultiVarAssignment evidences) {
         return studentDistribution.evidence(evidences)
                 .norm()
                 .filter(assignment -> assignment.varAssignments().contains(event))
@@ -113,7 +113,7 @@ public class ProbabilityQueryTest {
                 .sum();
     }
 
-    private double eventProbability(final VarAssignment event) {
+    private double eventProbability(final MultiVarAssignment event) {
         return studentDistribution
             .norm()
             .filter(assignment -> assignment.varAssignments().contains(event))
@@ -131,7 +131,7 @@ public class ProbabilityQueryTest {
     public void testStrongLetterGivenLowIntelligence() {
         Assert.assertEquals(0.389, eventProbability(
             letter.set(Letter.STRONG),
-            intelligence.set(Intelligence.LOW).toMultiAssignment()),
+            intelligence.set(Intelligence.LOW)),
             0.001d);
     }
 
@@ -139,7 +139,7 @@ public class ProbabilityQueryTest {
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testStrongLetterGivenLowIntelligenceAndEasyDifficulty() {
         Assert.assertEquals(0.513d, eventProbability(letter.set(Letter.STRONG),
-            intelligence.set(Intelligence.LOW).and(difficulty.set(Difficulty.EASY)).toMultiAssignment()),
+            intelligence.set(Intelligence.LOW).and(difficulty.set(Difficulty.EASY))),
             0.001d);
     }
 
@@ -147,41 +147,41 @@ public class ProbabilityQueryTest {
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenCGrade() {
         Assert.assertEquals(0.078d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).toMultiAssignment()), 0.001d);
+            grade.set(Grade.C)), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenWeakLetter() {
         Assert.assertEquals(0.14d, eventProbability(intelligence.set(Intelligence.HIGH),
-            letter.set(Letter.WEAK).toMultiAssignment()), 0.001d);
+            letter.set(Letter.WEAK)), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenWeakLetterAndGradeC() {
         Assert.assertEquals(0.079d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(letter.set(Letter.WEAK)).toMultiAssignment()), 0.001d);
+            grade.set(Grade.C).and(letter.set(Letter.WEAK))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenSatScoreIsHighAndGradeC() {
         Assert.assertEquals(0.578d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(sat.set(SATScore.HIGH)).toMultiAssignment()), 0.001d);
+            grade.set(Grade.C).and(sat.set(SATScore.HIGH))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenGradeCAndDifficultClass() {
         Assert.assertEquals(0.11d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(difficulty.set(Difficulty.HARD)).toMultiAssignment()), 0.001d);
+            grade.set(Grade.C).and(difficulty.set(Difficulty.HARD))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenGradeBAndDifficultClass() {
         Assert.assertEquals(0.34d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.B).and(difficulty.set(Difficulty.HARD)).toMultiAssignment()), 0.001d);
+            grade.set(Grade.B).and(difficulty.set(Difficulty.HARD))), 0.001d);
     }
 }

@@ -16,7 +16,7 @@ public class AssignmentUtilsTest {
         RandomVariable<Integer, Integer> c = RandomVariable.builder().id(3).events(1, 2, 3).build();
 
         List<Integer> indexes = AssignmentUtils.subAssignmentIndexes(
-            a.set(1).and(b.set(1)).toMultiAssignment(),
+            a.set(1).and(b.set(1)),
             Arrays.asList(a, b, c));
 
         Assert.assertEquals(Arrays.asList(0, 9, 18), indexes);

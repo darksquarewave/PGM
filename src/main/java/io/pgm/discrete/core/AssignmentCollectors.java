@@ -16,6 +16,7 @@ public final class AssignmentCollectors {
     private AssignmentCollectors() {
     }
 
+    //todo: refac, move combine and finish to evaluator
     public static Collector<Assignment, ?, AssignmentStream> multiplying() {
         return Collector.of(
             () -> new AssignmentFunctionEvaluator((a, b) -> a * b, 1d),

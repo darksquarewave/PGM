@@ -116,13 +116,22 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
         return eventSpace.size();
     }
 
-    public VarAssignment<T, E> set(final E event) {
+    public MultiVarAssignment set(final E event) {
         if (!eventSpace.contains(event)) {
             throw new IllegalArgumentException("Event is not in the event space");
         }
 
-        return new VarAssignment<>(this, event);
+        VarAssignment<T, E> varAssignment = new VarAssignment<>(this, event);
+        return new MultiVarAssignment(Collections.singletonList(varAssignment));
     }
+
+//    public VarAssignment<T, E> set(final E event) {
+//        if (!eventSpace.contains(event)) {
+//            throw new IllegalArgumentException("Event is not in the event space");
+//        }
+//
+//        return new VarAssignment<>(this, event);
+//    }
 
     VarAssignment<T, E> setIndex(final int eventIndex) {
         if (eventIndex < 0 || eventIndex >= eventSpace.size()) {

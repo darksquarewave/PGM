@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 final class AssignmentUtils {
 
@@ -28,23 +27,10 @@ final class AssignmentUtils {
         return assignmentIndex(multiVarAssignment.assignments());
     }
 
-    static int assignmentIndex(final MultiVarAssignment multiVarAssignment,
-                               final Set<? extends RandomVariable> ignoreVars) {
-        return assignmentIndex(multiVarAssignment.assignments(), ignoreVars);
-    }
-
     static int assignmentIndex(final Collection<? extends VarAssignment> assignments) {
-        return assignmentIndex(assignments, Collections.emptySet());
-    }
-
-    static int assignmentIndex(final Collection<? extends VarAssignment> assignments,
-                               final Set<? extends RandomVariable> ignoreVars) {
         int i = 0;
         int cp = 1;
         for (VarAssignment assignment : assignments) {
-            if (!ignoreVars.isEmpty() && ignoreVars.contains(assignment.randomVariable())) {
-                continue;
-            }
             i += assignment.index() * cp;
             cp *= assignment.randomVariable().cardinality();
         }
@@ -57,7 +43,7 @@ final class AssignmentUtils {
         List<List<Integer>> input = new ArrayList<>();
 
         for (RandomVariable randomVar : randomVars) {
-            Optional<VarAssignment> varAssignment = subAssignment.varAssignment(randomVar);
+            Optional<VarAssignment> varAssignment = subAssignment.get(randomVar);
 
             if (varAssignment.isPresent()) {
                 input.add(Collections.singletonList(varAssignment.get().index()));

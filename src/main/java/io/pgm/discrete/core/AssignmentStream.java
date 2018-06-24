@@ -30,8 +30,6 @@ public interface AssignmentStream extends BaseStream<Assignment, AssignmentStrea
 
     AssignmentStream lognorm();
 
-    AssignmentStream evidence(VarAssignment evidence);
-
     AssignmentStream evidence(MultiVarAssignment evidence);
 
     DoubleStream mapToDouble(AssignmentToDoubleFunction mapper);
