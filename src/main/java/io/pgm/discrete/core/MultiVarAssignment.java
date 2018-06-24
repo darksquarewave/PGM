@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+//todo: merge this class with varassignment
 public final class MultiVarAssignment implements Comparable<MultiVarAssignment>, Serializable {
 
     private static final long serialVersionUID = -2373257928740712783L;

@@ -9,6 +9,7 @@ import io.pgm.discrete.function.ObjAssignmentConsumer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -91,9 +92,10 @@ public final class DefaultAssignmentStream implements AssignmentStream {
     @Override
     public AssignmentStream evidence(final MultiVarAssignment evidence) {
         return new DefaultAssignmentStream(map(assignment -> {
-//            if (Collections.disjoint(evidence.randomVariables(), assignment.randomVariables())) {
-//                throw new IllegalArgumentException("Invalid evidence");
-//            }
+//todo: add test
+            if (Collections.disjoint(evidence.randomVariables(), assignment.randomVariables())) {
+                throw new IllegalArgumentException("Invalid evidence");
+            }
 
             if (assignment.varAssignments().contains(evidence)) {
                 return assignment;
