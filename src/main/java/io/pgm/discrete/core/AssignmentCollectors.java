@@ -61,6 +61,7 @@ public final class AssignmentCollectors {
             AssignmentLogSumNormalization::finish);
     }
 
+    //todo: implements Collector
     private static final class AssignmentFunctionEvaluator implements AssignmentConsumer {
 
         private final ToDoubleBiFunction<Double, Double> evaluator;
@@ -127,6 +128,7 @@ public final class AssignmentCollectors {
         }
     }
 
+    //todo: implements Collector
     static class AssignmentSumNormalization implements AssignmentConsumer {
 
         private double sum;
@@ -151,6 +153,7 @@ public final class AssignmentCollectors {
         }
     }
 
+    //todo: implements Collector
     private static class AssignmentLogSumNormalization implements AssignmentConsumer {
 
         private double max = Double.NEGATIVE_INFINITY;
