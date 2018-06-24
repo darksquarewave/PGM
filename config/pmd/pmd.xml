@@ -94,6 +94,7 @@
         <exclude name="UnnecessaryLocalBeforeReturn"/>
         <exclude name="UseLocaleWithCaseConversions"/>
         <exclude name="OptimizableToArrayCall"/>
+        <exclude name="MissingStaticMethodInNonInstantiatableClass"/>
         <exclude name="SimplifyBooleanReturns"/>          <!-- too many false positives -->
         <exclude name="ConfusingTernary"/>                <!-- too many false positives -->
         <!--    <exclude name="ImmutableField"/>   -->               <!-- flags mutable types too, e.g., int[] x  -->
@@ -175,9 +176,6 @@
                   j2ee.xml
          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
 
-    <rule ref="rulesets/java/j2ee.xml/DoNotUseThreads"
-          message="Do not use threads in this course."/>
-
     <rule ref="rulesets/java/j2ee.xml/DoNotCallSystemExit"
           message="Do not call ''System.exit()'' in this course."/>
 
@@ -228,6 +226,7 @@
 
     <rule ref="rulesets/java/strictexception.xml">
         <exclude name="AvoidCatchingNPE"/>        <!-- redundant with AvoidCatchingGenericException  -->
+        <exclude name="AvoidThrowingNullPointerException"/>
     </rule>
 
     <rule ref="rulesets/java/strictexception.xml/AvoidCatchingGenericException"
@@ -235,14 +234,6 @@
 
     <rule ref="rulesets/java/strictexception.xml/AvoidCatchingThrowable"
           message="Do not catch ''Throwable'' in this course."/>
-
-    <rule ref="rulesets/java/strictexception.xml/AvoidThrowingNullPointerException"
-          message="Do not throw a ''NullPointerException'' in this program.">
-        <properties>
-            <property name="violationSuppressXPath"
-                      value="//ClassOrInterfaceDeclaration[@Image='Term']"/>
-        </properties>
-    </rule>
 
     <!-- exception for early COS 126 assignment -->
     <rule ref="rulesets/java/strictexception.xml/AvoidThrowingRawExceptionTypes"

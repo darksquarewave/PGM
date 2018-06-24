@@ -1,11 +1,24 @@
 group 'java.org.pgm'
 version '1.0.0'
 
+buildscript {
+  repositories {
+    jcenter()
+    maven {
+      url 'https://plugins.gradle.org/m2/'
+    }
+  }
+  dependencies {
+    classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.5'
+  }
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'checkstyle'
+apply plugin: 'me.champeau.gradle.jmh'
 
 assert JavaVersion.current().isJava8Compatible()
 
@@ -20,20 +33,22 @@ configurations {
 }
 
 dependencies {
-  ext.checkerFrameworkVersion = '2.3.2'
-  ext.jdkVersion = 'jdk8'
   checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
 
   compile "org.checkerframework:checker:${checkerFrameworkVersion}"
   compile "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
 
-  compile 'org.apache.commons:commons-lang3:3.1'
+  compile "org.apache.commons:commons-lang3:${commonsLangVersion}"
+  compile 'one.util:streamex:0.6.6'
 
-  testCompile group: 'junit', name: 'junit', version: '4.11'
+  jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
+  jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+
+  testCompile group: 'junit', name: 'junit', version: junitVersion
 }
 
-allprojects {
-  tasks.withType(JavaCompile).all { JavaCompile compile ->
+tasks.withType(JavaCompile).all { JavaCompile compile ->
+  if (name != 'jmhCompileGeneratedClasses') {
     compile.doFirst {
       compile.options.compilerArgs = [
           '-processor', 'org.checkerframework.checker.nullness.NullnessChecker',
@@ -49,14 +64,18 @@ checkstyle {
   configFile file('config/checkstyle/checkstyle.xml')
 }
 
-findbugsMain {
+tasks.withType(FindBugs) {
   reports {
     xml.enabled = false
     html.enabled = true
   }
+  excludeFilter = file("config/findbugs/exclude.xml")
 }
 
 pmd {
   ruleSetFiles = files("config/pmd/pmd.xml")
 }
 
+task wrapper(type: Wrapper) {
+  gradleVersion = gradleWrapperVersion
+}
