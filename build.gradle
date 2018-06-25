@@ -39,7 +39,6 @@ dependencies {
   compile "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
 
   compile "org.apache.commons:commons-lang3:${commonsLangVersion}"
-  compile 'one.util:streamex:0.6.6'
 
   jmh "org.openjdk.jmh:jmh-core:${jmhVersion}"
   jmh "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
