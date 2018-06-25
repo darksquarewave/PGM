@@ -1,13 +1,16 @@
 package io.pgm.discrete.core;
 
-import io.pgm.discrete.function.AssignmentConsumer;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToDoubleBiFunction;
 import java.util.stream.Collector;
 
@@ -16,61 +19,32 @@ public final class AssignmentCollectors {
     private AssignmentCollectors() {
     }
 
-    //todo: refac, move combine and finish to evaluator
     public static Collector<Assignment, ?, AssignmentStream> multiplying() {
-        return Collector.of(
-            () -> new AssignmentFunctionEvaluator((a, b) -> a * b, 1d),
-            AssignmentFunctionEvaluator::accept,
-            (left, right) -> {
-                left.combine(right);
-                return left;
-            },
-            evaluator -> AssignmentStream.builder()
-                .variables(evaluator.vars)
-                .values(evaluator.values)
-                .build());
+        return new AssignmentFunctionEvaluator((a, b) -> a * b, 1d);
     }
 
     public static Collector<Assignment, ?, AssignmentStream> summing() {
-        return Collector.of(
-            () -> new AssignmentFunctionEvaluator((a, b) -> a + b, 0d),
-            AssignmentFunctionEvaluator::accept,
-            (left, right) -> {
-                left.combine(right);
-                return left;
-            },
-            evaluator -> AssignmentStream.builder()
-                .variables(evaluator.vars)
-                .values(evaluator.values)
-                .build());
+        return new AssignmentFunctionEvaluator((a, b) -> a + b, 0d);
     }
 
     public static Collector<Assignment, ?, AssignmentStream> normalizing() {
-        return Collector.of(
-            AssignmentSumNormalization::new,
-            AssignmentSumNormalization::accept,
-            AssignmentSumNormalization::combine,
-            AssignmentSumNormalization::finish);
+        return new AssignmentSumNormalization();
     }
 
     public static Collector<Assignment, ?, AssignmentStream> lognormalizing() {
-        return Collector.of(
-            AssignmentLogSumNormalization::new,
-            AssignmentLogSumNormalization::accept,
-            AssignmentLogSumNormalization::combine,
-            AssignmentLogSumNormalization::finish);
+        return new AssignmentLogSumNormalization();
     }
 
-    //todo: implements Collector
-    private static final class AssignmentFunctionEvaluator implements AssignmentConsumer {
+    private static final class AssignmentFunctionEvaluator implements
+            Collector<Assignment, AssignmentFunctionEvaluator, AssignmentStream> {
 
-        private final ToDoubleBiFunction<Double, Double> evaluator;
+        private final ToDoubleBiFunction<Double, Double> fn;
         private final double initVal;
         private final Set<RandomVariable> vars;
         private final List<Double> values;
 
-        private AssignmentFunctionEvaluator(final ToDoubleBiFunction<Double, Double> fn, final double val) {
-            evaluator = fn;
+        private AssignmentFunctionEvaluator(final ToDoubleBiFunction<Double, Double> biFunction, final double val) {
+            fn = biFunction;
             initVal = val;
             vars = new TreeSet<>();
             values = new ArrayList<>();
@@ -106,78 +80,136 @@ public final class AssignmentCollectors {
         }
 
         @Override
-        public void accept(final Assignment a) {
-            mergeVars(a.randomVariables());
-
-            for (int i : AssignmentUtils.subAssignmentIndexes(a.varAssignments(), vars)) {
-                values.set(i, evaluator.applyAsDouble(values.get(i), a.value()));
-            }
+        public Supplier<AssignmentFunctionEvaluator> supplier() {
+            return () -> new AssignmentFunctionEvaluator(fn, initVal);
         }
 
-        void combine(final AssignmentFunctionEvaluator other) {
-            mergeVars(other.vars);
+        @Override
+        public BiConsumer<AssignmentFunctionEvaluator, Assignment> accumulator() {
+            return (evaluator, a) -> {
+                evaluator.mergeVars(a.randomVariables());
 
-            new MultiVarAssignmentSpliterator(other.vars).forEachRemaining(accAssignment -> {
-                for (int i : AssignmentUtils.subAssignmentIndexes(accAssignment, vars)) {
-                    double accVal = other.values.get(accAssignment.index());
-                    double selfVal = values.get(i);
-
-                    values.set(i, evaluator.applyAsDouble(selfVal, accVal));
+                for (int i : AssignmentUtils.subAssignmentIndexes(a.varAssignments(), evaluator.vars)) {
+                    evaluator.values.set(i, evaluator.fn.applyAsDouble(evaluator.values.get(i), a.value()));
                 }
-            });
+            };
+        }
+
+        @Override
+        public BinaryOperator<AssignmentFunctionEvaluator> combiner() {
+            return (left, right) -> {
+                left.mergeVars(right.vars);
+
+                new MultiVarAssignmentSpliterator(right.vars).forEachRemaining(accAssignment -> {
+                    for (int i : AssignmentUtils.subAssignmentIndexes(accAssignment, left.vars)) {
+                        double accVal = right.values.get(accAssignment.index());
+                        double selfVal = left.values.get(i);
+
+                        left.values.set(i, left.fn.applyAsDouble(selfVal, accVal));
+                    }
+                });
+
+                return left;
+            };
+        }
+
+        @Override
+        public Function<AssignmentFunctionEvaluator, AssignmentStream> finisher() {
+            return (evaluator) ->
+                AssignmentStream.builder()
+                    .variables(evaluator.vars)
+                    .values(evaluator.values)
+                    .build();
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return Collections.emptySet();
         }
     }
 
-    //todo: implements Collector
-    static class AssignmentSumNormalization implements AssignmentConsumer {
+    static class AssignmentSumNormalization implements
+            Collector<Assignment, AssignmentSumNormalization, AssignmentStream> {
 
+        private final List<Assignment> assignments = new ArrayList<>();
         private double sum;
-        private final List<Assignment> assignments = new ArrayList<>();
 
         @Override
-        public void accept(final Assignment assignment) {
-            sum += assignment.value();
-            assignments.add(assignment);
+        public Supplier<AssignmentSumNormalization> supplier() {
+            return AssignmentSumNormalization::new;
         }
 
-        static AssignmentSumNormalization combine(final AssignmentSumNormalization that,
-                                                  final AssignmentSumNormalization other) {
-            that.sum += other.sum;
-            that.assignments.addAll(other.assignments);
-            return that;
+        @Override
+        public BiConsumer<AssignmentSumNormalization, Assignment> accumulator() {
+            return (normalization, assignment) -> {
+                normalization.sum += assignment.value();
+                normalization.assignments.add(assignment);
+            };
         }
 
-        AssignmentStream finish() {
-            return new DefaultAssignmentStream(assignments.stream()
-                .map(assignment -> assignment.divide(sum)));
+        @Override
+        public BinaryOperator<AssignmentSumNormalization> combiner() {
+            return (left, right) -> {
+                left.sum += right.sum;
+                left.assignments.addAll(right.assignments);
+                return left;
+            };
+        }
+
+        @Override
+        public Function<AssignmentSumNormalization, AssignmentStream> finisher() {
+            return (normalization) -> new DefaultAssignmentStream(normalization.assignments.stream()
+                .map(assignment -> assignment.divide(normalization.sum)));
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return Collections.emptySet();
         }
     }
 
-    //todo: implements Collector
-    private static class AssignmentLogSumNormalization implements AssignmentConsumer {
+    private static class AssignmentLogSumNormalization implements
+            Collector<Assignment, AssignmentLogSumNormalization, AssignmentStream> {
 
-        private double max = Double.NEGATIVE_INFINITY;
         private final List<Assignment> assignments = new ArrayList<>();
+        private double max = Double.NEGATIVE_INFINITY;
 
         @Override
-        public void accept(final Assignment assignment) {
-            max = Math.max(max, assignment.value());
-            assignments.add(assignment);
+        public Supplier<AssignmentLogSumNormalization> supplier() {
+            return AssignmentLogSumNormalization::new;
         }
 
-        static AssignmentLogSumNormalization combine(final AssignmentLogSumNormalization that,
-                                                     final AssignmentLogSumNormalization other) {
-            that.max = Math.max(that.max, other.max);
-            that.assignments.addAll(other.assignments);
-            return that;
+        @Override
+        public BiConsumer<AssignmentLogSumNormalization, Assignment> accumulator() {
+            return (normalization, assignment) -> {
+                normalization.max = Math.max(normalization.max, assignment.value());
+                normalization.assignments.add(assignment);
+            };
         }
 
-        AssignmentStream finish() {
-            double logsum = max + Math.log(assignments.stream()
-                .mapToDouble(assignment -> Math.exp(assignment.value() - max)).sum());
+        @Override
+        public BinaryOperator<AssignmentLogSumNormalization> combiner() {
+            return (left, right) -> {
+                left.max = Math.max(left.max, right.max);
+                left.assignments.addAll(right.assignments);
+                return left;
+            };
+        }
 
-            return new DefaultAssignmentStream(assignments.stream()
-                .map(assignment -> assignment.minus(logsum)));
+        @Override
+        public Function<AssignmentLogSumNormalization, AssignmentStream> finisher() {
+            return (normalization) -> {
+                double logsum = normalization.max + Math.log(normalization.assignments.stream()
+                    .mapToDouble(assignment -> Math.exp(assignment.value() - normalization.max)).sum());
+
+                return new DefaultAssignmentStream(normalization.assignments.stream()
+                    .map(assignment -> assignment.minus(logsum)));
+            };
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return Collections.emptySet();
         }
     }
 }

@@ -135,10 +135,6 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
         return assignments.entrySet().containsAll(subAssignment.assignments.entrySet());
     }
 
-    public boolean contains(final VarAssignment varAssignment) {
-        return assignments.values().contains(varAssignment);
-    }
-
     public static final class Builder {
 
         private final List<VarAssignment> varAssignments = new ArrayList<>();
