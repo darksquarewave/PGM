@@ -179,4 +179,12 @@ public class ProbabilityQueryTest {
         Assert.assertEquals(0.34d, eventProbability(intelligence.set(Intelligence.HIGH),
             grade.set(Grade.B).and(difficulty.set(Difficulty.HARD))), 0.001d);
     }
+
+    @Test
+    @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
+    public void testHighIntelligenceAndWeakLetterGivenGradeBAndDifficultClass() {
+        Assert.assertEquals(0.135d, eventProbability(
+            intelligence.set(Intelligence.HIGH).and(letter.set(Letter.WEAK)),
+            grade.set(Grade.B).and(difficulty.set(Difficulty.HARD))), 0.001d);
+    }
 }

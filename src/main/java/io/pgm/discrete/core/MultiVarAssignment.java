@@ -80,10 +80,6 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
         return new MultiVarAssignment(Iterables.concat(assignments.values(), varAssignment.assignments()));
     }
 
-    public MultiVarAssignment and(final VarAssignment varAssignment) {
-        return new MultiVarAssignment(Iterables.concat(assignments.values(), Collections.singletonList(varAssignment)));
-    }
-
     public Collection<? extends VarAssignment> assignments() {
         return assignments.values();
     }
