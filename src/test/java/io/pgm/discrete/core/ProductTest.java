@@ -10,13 +10,11 @@ public class ProductTest {
 
     @Test
     public void testSequentialProductCase1() {
-        RandomVariable<String, Integer> var1 = RandomVariable.builder()
-            .id("a")
+        RandomVariable<String, Integer> var1 = RandomVariable.id("a")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var2 = RandomVariable.builder()
-            .id("b")
+        RandomVariable<String, Integer> var2 = RandomVariable.id("b")
             .events(1, 2)
             .build();
 
@@ -45,18 +43,15 @@ public class ProductTest {
 
     @Test
     public void testSequentialProductCase2() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
@@ -89,38 +84,31 @@ public class ProductTest {
 
     @Test
     public void testSequentialProductCase3() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> d = RandomVariable.builder()
-            .id(4)
+        RandomVariable<Integer, Integer> d = RandomVariable.id(4)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> e = RandomVariable.builder()
-            .id(5)
+        RandomVariable<Integer, Integer> e = RandomVariable.id(5)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> f = RandomVariable.builder()
-            .id(6)
+        RandomVariable<Integer, Integer> f = RandomVariable.id(6)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> g = RandomVariable.builder()
-            .id(7)
+        RandomVariable<Integer, Integer> g = RandomVariable.id(7)
             .events(1, 2)
             .build();
 
@@ -197,13 +185,11 @@ public class ProductTest {
 
     @Test
     public void testParallelProductCase1() {
-        RandomVariable<String, Integer> var1 = RandomVariable.builder()
-            .id("a")
+        RandomVariable<String, Integer> var1 = RandomVariable.id("a")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var2 = RandomVariable.builder()
-            .id("b")
+        RandomVariable<String, Integer> var2 = RandomVariable.id("b")
             .events(1, 2)
             .build();
 
@@ -232,18 +218,15 @@ public class ProductTest {
 
     @Test
     public void testParallelProductCase2() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
@@ -276,38 +259,31 @@ public class ProductTest {
 
     @Test
     public void testParallelProductCase3() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> d = RandomVariable.builder()
-            .id(4)
+        RandomVariable<Integer, Integer> d = RandomVariable.id(4)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> e = RandomVariable.builder()
-            .id(5)
+        RandomVariable<Integer, Integer> e = RandomVariable.id(5)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> f = RandomVariable.builder()
-            .id(6)
+        RandomVariable<Integer, Integer> f = RandomVariable.id(6)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> g = RandomVariable.builder()
-            .id(7)
+        RandomVariable<Integer, Integer> g = RandomVariable.id(7)
             .events(1, 2)
             .build();
 

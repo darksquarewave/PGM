@@ -39,15 +39,13 @@ public final class AssignmentCollectors {
             Collector<Assignment, AssignmentFunctionEvaluator, AssignmentStream> {
 
         private final ToDoubleBiFunction<Double, Double> fn;
+        private final Set<RandomVariable> vars = new TreeSet<>();
+        private final List<Double> values = new ArrayList<>();
         private final double initVal;
-        private final Set<RandomVariable> vars;
-        private final List<Double> values;
 
         private AssignmentFunctionEvaluator(final ToDoubleBiFunction<Double, Double> biFunction, final double val) {
             fn = biFunction;
             initVal = val;
-            vars = new TreeSet<>();
-            values = new ArrayList<>();
         }
 
         private void mergeVars(final Collection<? extends RandomVariable> randomVars) {

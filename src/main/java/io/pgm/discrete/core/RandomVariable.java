@@ -19,25 +19,15 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
     private final T id;
     private final Collection<? extends E> eventSpace;
 
-    public static IdBuilder builder() {
-        return new IdBuilder();
+    public static <T extends Comparable<T>> Builder<T> id(final T id) {
+        return new Builder<>(id);
     }
 
-    public static final class IdBuilder {
-
-        private IdBuilder() {
-        }
-
-        public <T extends Comparable<T>> EventSpaceBuilder<T> id(final T id) {
-            return new EventSpaceBuilder<>(id);
-        }
-    }
-
-    public static final class EventSpaceBuilder<T extends Comparable<T>> {
+    public static final class Builder<T extends Comparable<T>> {
 
         private final T id;
 
-        private EventSpaceBuilder(final T varId) {
+        private Builder(final T varId) {
             this.id = varId;
         }
 

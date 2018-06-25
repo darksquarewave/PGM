@@ -12,8 +12,8 @@ public class AssignmentConstructionTest {
     @Test
     public void testVarConstruction() {
         AssignmentStream stream = AssignmentStream.builder()
-            .variable(RandomVariable.builder().id("a").events(1, 2).build())
-            .variable(RandomVariable.builder().id("b").events(1, 2).build())
+            .variable(RandomVariable.id("a").events(1, 2).build())
+            .variable(RandomVariable.id("b").events(1, 2).build())
             .values(0.5d, 0.5d)
             .values(0.6d, 0.4d)
             .build();

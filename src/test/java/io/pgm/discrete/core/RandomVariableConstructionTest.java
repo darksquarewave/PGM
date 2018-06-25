@@ -17,10 +17,9 @@ public class RandomVariableConstructionTest {
 
     @Test
     public void testConstruction() {
-        RandomVariable<VarType, IntelligenceType> a = RandomVariable.builder()
-                .id(VarType.INTELLIGENCE)
-                .events(IntelligenceType.values())
-                .build();
+        RandomVariable<VarType, IntelligenceType> a = RandomVariable.id(VarType.INTELLIGENCE)
+            .events(IntelligenceType.values())
+            .build();
 
         Assert.assertEquals(2, a.cardinality());
     }

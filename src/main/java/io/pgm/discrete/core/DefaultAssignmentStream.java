@@ -21,7 +21,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public final class DefaultAssignmentStream implements AssignmentStream {
+final class DefaultAssignmentStream implements AssignmentStream {
 
     private final Stream<Assignment> stream;
 

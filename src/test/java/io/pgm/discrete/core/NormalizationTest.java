@@ -10,8 +10,7 @@ public final class NormalizationTest {
 
     @Test
     public void testNormalization_case1() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2)
             .build();
 
@@ -30,18 +29,15 @@ public final class NormalizationTest {
 
     @Test
     public void testNormalization_case2() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
@@ -60,8 +56,7 @@ public final class NormalizationTest {
 
     @Test
     public void testLogNormalization_case1() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
             .events(1, 2)
             .build();
 

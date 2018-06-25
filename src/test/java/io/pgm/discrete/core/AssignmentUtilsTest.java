@@ -11,9 +11,9 @@ public class AssignmentUtilsTest {
 
     @Test
     public void testSubAssignmentIndexes() {
-        RandomVariable<Integer, Integer> a = RandomVariable.builder().id(1).events(1, 2, 3).build();
-        RandomVariable<Integer, Integer> b = RandomVariable.builder().id(2).events(1, 2, 3).build();
-        RandomVariable<Integer, Integer> c = RandomVariable.builder().id(3).events(1, 2, 3).build();
+        RandomVariable<Integer, Integer> a = RandomVariable.id(1).events(1, 2, 3).build();
+        RandomVariable<Integer, Integer> b = RandomVariable.id(2).events(1, 2, 3).build();
+        RandomVariable<Integer, Integer> c = RandomVariable.id(3).events(1, 2, 3).build();
 
         List<Integer> indexes = AssignmentUtils.subAssignmentIndexes(
             a.set(1).and(b.set(1)),

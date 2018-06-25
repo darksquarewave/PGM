@@ -11,18 +11,15 @@ public class ConcatTest {
 
     @Test
     public void testConcat() {
-        RandomVariable<String, Integer> var1 = RandomVariable.builder()
-            .id("var1")
+        RandomVariable<String, Integer> var1 = RandomVariable.id("var1")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var2 = RandomVariable.builder()
-            .id("var2")
+        RandomVariable<String, Integer> var2 = RandomVariable.id("var2")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var3 = RandomVariable.builder()
-            .id("var3")
+        RandomVariable<String, Integer> var3 = RandomVariable.id("var3")
             .events(1, 2)
             .build();
 

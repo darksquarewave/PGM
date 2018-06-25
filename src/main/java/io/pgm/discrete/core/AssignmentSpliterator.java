@@ -17,13 +17,13 @@ final class AssignmentSpliterator implements Spliterator<Assignment> {
         values = v;
     }
 
-    private void setGroupAssignment(final MultiVarAssignment ga) {
+    private void setVarAssignment(final MultiVarAssignment ga) {
         current = ga;
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Assignment> action) {
-        if (!source.tryAdvance(this::setGroupAssignment)) {
+        if (!source.tryAdvance(this::setVarAssignment)) {
             return false;
         }
         if (source.index() > values.size()) {

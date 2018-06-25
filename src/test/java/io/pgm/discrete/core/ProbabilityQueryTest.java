@@ -40,28 +40,23 @@ public class ProbabilityQueryTest {
 
     @SuppressWarnings({"checkstyle:magicnumber"})
     public ProbabilityQueryTest() {
-        difficulty = RandomVariable.builder()
-            .id(StudentNetwork.DIFFICULTY)
+        difficulty = RandomVariable.id(StudentNetwork.DIFFICULTY)
             .events(Difficulty.values())
             .build();
 
-        intelligence = RandomVariable.builder()
-            .id(StudentNetwork.INTELLIGENCE)
+        intelligence = RandomVariable.id(StudentNetwork.INTELLIGENCE)
             .events(Intelligence.values())
             .build();
 
-        grade = RandomVariable.builder()
-            .id(StudentNetwork.GRADE)
+        grade = RandomVariable.id(StudentNetwork.GRADE)
             .events(Grade.values())
             .build();
 
-        sat = RandomVariable.builder()
-            .id(StudentNetwork.SAT)
+        sat = RandomVariable.id(StudentNetwork.SAT)
             .events(SATScore.values())
             .build();
 
-        letter = RandomVariable.builder()
-            .id(StudentNetwork.LETTER)
+        letter = RandomVariable.id(StudentNetwork.LETTER)
             .events(Letter.values())
             .build();
 

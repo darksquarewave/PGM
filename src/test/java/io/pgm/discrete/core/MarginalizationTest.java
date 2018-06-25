@@ -10,13 +10,11 @@ public final class MarginalizationTest {
 
     @Test
     public void testMarginalization_case1() {
-        RandomVariable<Integer, Integer> var1 = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> var1 = RandomVariable.id(1)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> var2 = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> var2 = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
@@ -38,18 +36,15 @@ public final class MarginalizationTest {
 
     @Test
     public void testMarginalization_case2() {
-        RandomVariable<Integer, Integer> var1 = RandomVariable.builder()
-            .id(1)
+        RandomVariable<Integer, Integer> var1 = RandomVariable.id(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> var2 = RandomVariable.builder()
-            .id(2)
+        RandomVariable<Integer, Integer> var2 = RandomVariable.id(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> var3 = RandomVariable.builder()
-            .id(3)
+        RandomVariable<Integer, Integer> var3 = RandomVariable.id(3)
             .events(1, 2)
             .build();
 
