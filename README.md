@@ -1,1 +1,1 @@
-# Probabilistc Graphical Models for Java
+# Probabilistic Graphical Models for Java
