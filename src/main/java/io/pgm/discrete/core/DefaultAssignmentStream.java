@@ -87,9 +87,8 @@ final class DefaultAssignmentStream implements AssignmentStream {
     @Override
     public AssignmentStream evidence(final MultiVarAssignment evidence) {
         return new DefaultAssignmentStream(map(assignment -> {
-//todo: add test
             if (Collections.disjoint(evidence.randomVariables(), assignment.randomVariables())) {
-                throw new IllegalArgumentException("Invalid evidence");
+                throw new IllegalArgumentException();
             }
 
             if (assignment.varAssignments().contains(evidence)) {

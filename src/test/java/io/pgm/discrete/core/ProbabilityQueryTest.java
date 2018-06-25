@@ -102,10 +102,10 @@ public class ProbabilityQueryTest {
 
     private double eventProbability(final MultiVarAssignment event, final MultiVarAssignment evidences) {
         return studentDistribution.evidence(evidences)
-                .norm()
-                .filter(assignment -> assignment.varAssignments().contains(event))
-                .mapToDouble(Assignment::value)
-                .sum();
+            .norm()
+            .filter(assignment -> assignment.varAssignments().contains(event))
+            .mapToDouble(Assignment::value)
+            .sum();
     }
 
     private double eventProbability(final MultiVarAssignment event) {

@@ -3,7 +3,6 @@ package io.pgm.discrete.core;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 public final class VarAssignment<T extends Comparable<T>, E> implements Serializable,
@@ -38,10 +37,6 @@ public final class VarAssignment<T extends Comparable<T>, E> implements Serializ
         }
 
         throw new AssertionError("Target event is not in the event space");
-    }
-
-    public MultiVarAssignment and(final VarAssignment varAssignment) {
-        return new MultiVarAssignment(Arrays.asList(this, varAssignment));
     }
 
     @Override
