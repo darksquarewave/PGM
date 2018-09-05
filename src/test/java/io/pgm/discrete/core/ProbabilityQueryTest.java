@@ -30,78 +30,78 @@ public class ProbabilityQueryTest {
         WEAK, STRONG
     }
 
-    private final RandomVariable<StudentNetwork, Difficulty> difficulty;
-    private final RandomVariable<StudentNetwork, Intelligence> intelligence;
-    private final RandomVariable<StudentNetwork, Grade> grade;
-    private final RandomVariable<StudentNetwork, SATScore> sat;
-    private final RandomVariable<StudentNetwork, Letter> letter;
+    private static final RandomVariable<StudentNetwork, Difficulty> DIFFICULTY_RANDOM_VARIABLE;
+    private static final RandomVariable<StudentNetwork, Intelligence> INTELLIGENCE_RANDOM_VARIABLE;
+    private static final RandomVariable<StudentNetwork, Grade> GRADE_RANDOM_VARIABLE;
+    private static final RandomVariable<StudentNetwork, SATScore> SAT_SCORE_RANDOM_VARIABLE;
+    private static final RandomVariable<StudentNetwork, Letter> LETTER_RANDOM_VARIABLE;
 
-    private final AssignmentStream studentDistribution;
+    private static final ProbTable STUDENT_TABLE;
 
-    @SuppressWarnings({"checkstyle:magicnumber"})
-    public ProbabilityQueryTest() {
-        difficulty = RandomVariable.id(StudentNetwork.DIFFICULTY)
+    static {
+        DIFFICULTY_RANDOM_VARIABLE = RandomVariable.label(StudentNetwork.DIFFICULTY)
             .events(Difficulty.values())
             .build();
 
-        intelligence = RandomVariable.id(StudentNetwork.INTELLIGENCE)
+        INTELLIGENCE_RANDOM_VARIABLE = RandomVariable.label(StudentNetwork.INTELLIGENCE)
             .events(Intelligence.values())
             .build();
 
-        grade = RandomVariable.id(StudentNetwork.GRADE)
+        GRADE_RANDOM_VARIABLE = RandomVariable.label(StudentNetwork.GRADE)
             .events(Grade.values())
             .build();
 
-        sat = RandomVariable.id(StudentNetwork.SAT)
+        SAT_SCORE_RANDOM_VARIABLE = RandomVariable.label(StudentNetwork.SAT)
             .events(SATScore.values())
             .build();
 
-        letter = RandomVariable.id(StudentNetwork.LETTER)
+        LETTER_RANDOM_VARIABLE = RandomVariable.label(StudentNetwork.LETTER)
             .events(Letter.values())
             .build();
 
-        AssignmentStream difficultyAssignments = AssignmentStream.builder()
-            .variable(difficulty)
+        ProbTable difficultyTable = ProbTable.builder()
+            .variable(DIFFICULTY_RANDOM_VARIABLE)
             .value(0.6d)
             .value(0.4d)
             .build();
 
-        AssignmentStream intelligenceAssignments = AssignmentStream.builder()
-            .variable(intelligence)
+        ProbTable intelligenceTable = ProbTable.builder()
+            .variable(INTELLIGENCE_RANDOM_VARIABLE)
             .value(0.7d)
             .value(0.3d)
             .build();
 
-        AssignmentStream gradeAssignments = AssignmentStream.builder()
-            .variables(grade, difficulty, intelligence)
+        ProbTable gradeTable = ProbTable.builder()
+            .variables(GRADE_RANDOM_VARIABLE, DIFFICULTY_RANDOM_VARIABLE, INTELLIGENCE_RANDOM_VARIABLE)
             .values(0.3d, 0.4d, 0.3d)
             .values(0.05d, 0.25d, 0.7d)
             .values(0.9d, 0.08d, 0.02d)
             .values(0.5d, 0.3d, 0.2d)
             .build();
 
-        AssignmentStream satAssignments = AssignmentStream.builder()
-            .variables(sat, intelligence)
+        ProbTable satTable = ProbTable.builder()
+            .variables(SAT_SCORE_RANDOM_VARIABLE, INTELLIGENCE_RANDOM_VARIABLE)
             .values(0.95d, 0.05d)
             .values(0.2d, 0.8d)
             .build();
 
-        AssignmentStream letterAssignments = AssignmentStream.builder()
-            .variables(letter, grade)
+        ProbTable letterTable = ProbTable.builder()
+            .variables(LETTER_RANDOM_VARIABLE, GRADE_RANDOM_VARIABLE)
             .values(0.1d, 0.9d)
             .values(0.4d, 0.6d)
             .values(0.99d, 0.01d)
             .build();
 
-        studentDistribution = difficultyAssignments.concat(
-            intelligenceAssignments,
-            gradeAssignments,
-            satAssignments,
-            letterAssignments).product();
+        STUDENT_TABLE = difficultyTable.stream().concat(
+            intelligenceTable.stream(),
+            gradeTable.stream(),
+            satTable.stream(),
+            letterTable.stream()).product().collect(AssignmentCollectors.toProbTable());
     }
 
     private double eventProbability(final MultiVarAssignment event, final MultiVarAssignment evidences) {
-        return studentDistribution.evidence(evidences)
+        return STUDENT_TABLE.stream()
+            .evidence(evidences)
             .norm()
             .filter(assignment -> assignment.varAssignments().contains(event))
             .mapToDouble(Assignment::value)
@@ -109,7 +109,7 @@ public class ProbabilityQueryTest {
     }
 
     private double eventProbability(final MultiVarAssignment event) {
-        return studentDistribution
+        return STUDENT_TABLE.stream()
             .norm()
             .filter(assignment -> assignment.varAssignments().contains(event))
             .mapToDouble(Assignment::value)
@@ -118,73 +118,73 @@ public class ProbabilityQueryTest {
 
     @Test
     public void testStrongLetter() {
-        Assert.assertEquals(0.502d, eventProbability(letter.set(Letter.STRONG)), 0.001d);
+        Assert.assertEquals(0.502d, eventProbability(LETTER_RANDOM_VARIABLE.set(Letter.STRONG)), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testStrongLetterGivenLowIntelligence() {
         Assert.assertEquals(0.389, eventProbability(
-            letter.set(Letter.STRONG),
-            intelligence.set(Intelligence.LOW)),
+            LETTER_RANDOM_VARIABLE.set(Letter.STRONG),
+            INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.LOW)),
             0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testStrongLetterGivenLowIntelligenceAndEasyDifficulty() {
-        Assert.assertEquals(0.513d, eventProbability(letter.set(Letter.STRONG),
-            intelligence.set(Intelligence.LOW).and(difficulty.set(Difficulty.EASY))),
+        Assert.assertEquals(0.513d, eventProbability(LETTER_RANDOM_VARIABLE.set(Letter.STRONG),
+            INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.LOW).and(DIFFICULTY_RANDOM_VARIABLE.set(Difficulty.EASY))),
             0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenCGrade() {
-        Assert.assertEquals(0.078d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C)), 0.001d);
+        Assert.assertEquals(0.078d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            GRADE_RANDOM_VARIABLE.set(Grade.C)), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenWeakLetter() {
-        Assert.assertEquals(0.14d, eventProbability(intelligence.set(Intelligence.HIGH),
-            letter.set(Letter.WEAK)), 0.001d);
+        Assert.assertEquals(0.14d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            LETTER_RANDOM_VARIABLE.set(Letter.WEAK)), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenWeakLetterAndGradeC() {
-        Assert.assertEquals(0.079d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(letter.set(Letter.WEAK))), 0.001d);
+        Assert.assertEquals(0.079d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            GRADE_RANDOM_VARIABLE.set(Grade.C).and(LETTER_RANDOM_VARIABLE.set(Letter.WEAK))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenSatScoreIsHighAndGradeC() {
-        Assert.assertEquals(0.578d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(sat.set(SATScore.HIGH))), 0.001d);
+        Assert.assertEquals(0.578d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            GRADE_RANDOM_VARIABLE.set(Grade.C).and(SAT_SCORE_RANDOM_VARIABLE.set(SATScore.HIGH))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenGradeCAndDifficultClass() {
-        Assert.assertEquals(0.11d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.C).and(difficulty.set(Difficulty.HARD))), 0.001d);
+        Assert.assertEquals(0.11d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            GRADE_RANDOM_VARIABLE.set(Grade.C).and(DIFFICULTY_RANDOM_VARIABLE.set(Difficulty.HARD))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceGivenGradeBAndDifficultClass() {
-        Assert.assertEquals(0.34d, eventProbability(intelligence.set(Intelligence.HIGH),
-            grade.set(Grade.B).and(difficulty.set(Difficulty.HARD))), 0.001d);
+        Assert.assertEquals(0.34d, eventProbability(INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH),
+            GRADE_RANDOM_VARIABLE.set(Grade.B).and(DIFFICULTY_RANDOM_VARIABLE.set(Difficulty.HARD))), 0.001d);
     }
 
     @Test
     @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
     public void testHighIntelligenceAndWeakLetterGivenGradeBAndDifficultClass() {
         Assert.assertEquals(0.135d, eventProbability(
-            intelligence.set(Intelligence.HIGH).and(letter.set(Letter.WEAK)),
-            grade.set(Grade.B).and(difficulty.set(Difficulty.HARD))), 0.001d);
+            INTELLIGENCE_RANDOM_VARIABLE.set(Intelligence.HIGH).and(LETTER_RANDOM_VARIABLE.set(Letter.WEAK)),
+            GRADE_RANDOM_VARIABLE.set(Grade.B).and(DIFFICULTY_RANDOM_VARIABLE.set(Difficulty.HARD))), 0.001d);
     }
 }

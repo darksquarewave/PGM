@@ -1,17 +1,14 @@
 package io.pgm.discrete.core;
 
-import io.pgm.core.UtilitySpliterators;
 import io.pgm.discrete.function.AssignmentConsumer;
 import io.pgm.discrete.function.AssignmentPredicate;
 import io.pgm.discrete.function.AssignmentToDoubleFunction;
 import io.pgm.discrete.function.ObjAssignmentConsumer;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -25,8 +22,8 @@ final class DefaultAssignmentStream implements AssignmentStream {
 
     private final Stream<Assignment> stream;
 
-    DefaultAssignmentStream(final Spliterator<Assignment> spliterator) {
-        this(StreamSupport.stream(spliterator, false));
+    DefaultAssignmentStream(final Spliterator<Assignment> spliterator, final boolean parallel) {
+        this(StreamSupport.stream(spliterator, parallel));
     }
 
     DefaultAssignmentStream(final Stream<Assignment> delegate) {
@@ -79,7 +76,6 @@ final class DefaultAssignmentStream implements AssignmentStream {
         return collect(AssignmentCollectors.normalizing());
     }
 
-    @Override
     public AssignmentStream lognorm() {
         return collect(AssignmentCollectors.lognormalizing());
     }
@@ -127,6 +123,26 @@ final class DefaultAssignmentStream implements AssignmentStream {
     }
 
     @Override
+    public ProbTable toProbTable() {
+        ProbTable.Builder builder = ProbTable.builder();
+        Collection<? extends RandomVariable> randomVars = null;
+        Iterator<Assignment> iterator = iterator();
+
+        while (iterator.hasNext()) {
+            Assignment assignment = iterator.next();
+            if (randomVars == null) {
+                randomVars = assignment.randomVariables();
+                builder.variables(randomVars);
+            } else if (!randomVars.equals(assignment.randomVariables())) {
+                throw new IllegalArgumentException();
+            }
+            builder.value(assignment.value());
+        }
+
+        return builder.build();
+    }
+
+    @Override
     public Iterator<Assignment> iterator() {
         return stream.iterator();
     }
@@ -164,56 +180,5 @@ final class DefaultAssignmentStream implements AssignmentStream {
     @Override
     public void close() {
         stream.close();
-    }
-
-    static class BuilderImpl implements Builder {
-
-        private final List<RandomVariable> randomVars = new ArrayList<>();
-        private final List<Double> values = new ArrayList<>();
-
-        @Override
-        public Builder variable(final RandomVariable randomVar) {
-            randomVars.add(randomVar);
-            return this;
-        }
-
-        @Override
-        public Builder variables(final Collection<RandomVariable> vars) {
-            randomVars.addAll(vars);
-            return this;
-        }
-
-        @Override
-        public Builder variables(final RandomVariable ... vars) {
-            randomVars.addAll(Arrays.asList(vars));
-            return this;
-        }
-
-        @Override
-        public Builder value(final double value) {
-            values.add(value);
-            return this;
-        }
-
-        @Override
-        public Builder values(final Collection<Double> vals) {
-            values.addAll(vals);
-            return this;
-        }
-
-        @Override
-        public Builder values(final double ... vals) {
-            for (double val : vals) {
-                values.add(val);
-            }
-            return this;
-        }
-
-        @Override
-        public AssignmentStream build() {
-            MultiVarAssignmentSpliterator mvSpliterator = new MultiVarAssignmentSpliterator(randomVars);
-            AssignmentSpliterator assignmentSpliterator = new AssignmentSpliterator(mvSpliterator, values);
-            return new DefaultAssignmentStream(assignmentSpliterator);
-        }
     }
 }

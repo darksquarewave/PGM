@@ -16,8 +16,8 @@ final class AssignmentUtils {
             return 0;
         } else {
             int result = 1;
-            for (RandomVariable randomVariable : randomVars) {
-                result *= randomVariable.cardinality();
+            for (RandomVariable v : randomVars) {
+                result *= v.cardinality();
             }
             return result;
         }

@@ -3,74 +3,71 @@ package io.pgm.discrete.core;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.stream.Collectors;
-
 @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:designforextension"})
 public class ProductTest {
 
     @Test
     public void testSequentialProductCase1() {
-        RandomVariable<String, Integer> var1 = RandomVariable.id("a")
+        RandomVariable<String, Integer> var1 = RandomVariable.label("a")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var2 = RandomVariable.id("b")
+        RandomVariable<String, Integer> var2 = RandomVariable.label("b")
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variable(var1)
             .values(0.11d, 0.89d)
             .build()
-            .sequential();
+            .stream();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(var2, var1)
             .values(0.59d, 0.41d)
             .values(0.22d, 0.78d)
             .build()
-            .sequential();
+            .stream();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(var1, var2)
             .values(0.0649d, 0.1958d)
             .values(0.0451d, 0.6942d)
             .build();
 
-        Assert.assertEquals(s3.collect(Collectors.toSet()),
-            s1.concat(s2).product().collect(Collectors.toSet()));
+        Assert.assertEquals(result, s1.concat(s2).product().toProbTable());
     }
 
     @Test
     public void testSequentialProductCase2() {
-        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.label(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.label(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.label(3)
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variables(b, a)
             .values(0.5d, 0.8d)
             .values(0.1d, 0d)
             .values(0.3d, 0.9d)
             .build()
-            .sequential();
+            .stream();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(c, b)
             .values(0.5d, 0.7d)
             .values(0.1d, 0.2d)
             .build()
-            .sequential();
+            .stream();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(a, b, c)
             .values(0.25d, 0.05d, 0.15d)
             .values(0.08d, 0d, 0.09d)
@@ -78,56 +75,58 @@ public class ProductTest {
             .values(0.16d, 0d, 0.18d)
             .build();
 
-        Assert.assertEquals(s3.collect(Collectors.toList()),
-            s1.concat(s2).product().collect(Collectors.toList()));
+        Assert.assertEquals(result, s1.concat(s2).product().toProbTable());
     }
 
     @Test
     public void testSequentialProductCase3() {
-        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.label(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.label(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.label(3)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> d = RandomVariable.id(4)
+        RandomVariable<Integer, Integer> d = RandomVariable.label(4)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> e = RandomVariable.id(5)
+        RandomVariable<Integer, Integer> e = RandomVariable.label(5)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> f = RandomVariable.id(6)
+        RandomVariable<Integer, Integer> f = RandomVariable.label(6)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> g = RandomVariable.id(7)
+        RandomVariable<Integer, Integer> g = RandomVariable.label(7)
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variables(b, a)
             .values(0.5d, 0.8d, 0.1d, 0d, 0.3d, 0.9d)
-            .build();
+            .build()
+            .stream();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(d, c)
             .values(0.5d, 0.7d, 0.1d, 0.2d)
-            .build();
+            .build()
+            .stream();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        AssignmentStream s3 = ProbTable.builder()
             .variables(e, f, g)
             .values(0.25d, 0.05d, 0.15d, 0.08d, 0d, 0.09d, 0.35d, 0.07d, 0.21d, 0.16d, 0d, 0.18d)
-            .build();
+            .build()
+            .stream();
 
-        AssignmentStream result = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(a, b, c, d, e, f, g)
             .values(0.06250, 0.01250, 0.03750, 0.10000, 0.00000, 0.11250)
             .values(0.01250, 0.00250, 0.00750, 0.02000, 0.00000, 0.02250)
@@ -179,73 +178,75 @@ public class ProductTest {
             .values(0.01800, 0.00360, 0.01080, 0.02880, 0.00000, 0.03240)
             .build();
 
-        Assert.assertEquals(result.collect(Collectors.toSet()),
-            s1.concat(s2, s3).product().collect(Collectors.toSet()));
+        Assert.assertEquals(result, s1.concat(s2, s3).product().toProbTable());
     }
 
     @Test
     public void testParallelProductCase1() {
-        RandomVariable<String, Integer> var1 = RandomVariable.id("a")
+        RandomVariable<String, Integer> var1 = RandomVariable.label("a")
             .events(1, 2)
             .build();
 
-        RandomVariable<String, Integer> var2 = RandomVariable.id("b")
+        RandomVariable<String, Integer> var2 = RandomVariable.label("b")
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variable(var1)
             .values(0.11d, 0.89d)
             .build()
+            .stream()
             .parallel();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(var2, var1)
             .values(0.59d, 0.41d)
             .values(0.22d, 0.78d)
             .build()
+            .stream()
             .parallel();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(var1, var2)
             .values(0.0649d, 0.1958d)
             .values(0.0451d, 0.6942d)
             .build();
 
-        Assert.assertEquals(s3.collect(Collectors.toSet()),
-            s1.concat(s2).product().collect(Collectors.toSet()));
+        Assert.assertEquals(result, s1.concat(s2).product().collect(AssignmentCollectors.toProbTable()));
     }
 
     @Test
     public void testParallelProductCase2() {
-        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.label(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.label(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.label(3)
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variables(b, a)
             .values(0.5d, 0.8d)
             .values(0.1d, 0d)
             .values(0.3d, 0.9d)
             .build()
+            .stream()
             .parallel();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(c, b)
             .values(0.5d, 0.7d)
             .values(0.1d, 0.2d)
             .build()
+            .stream()
             .parallel();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(a, b, c)
             .values(0.25d, 0.05d, 0.15d)
             .values(0.08d, 0d, 0.09d)
@@ -253,56 +254,61 @@ public class ProductTest {
             .values(0.16d, 0d, 0.18d)
             .build();
 
-        Assert.assertEquals(s3.collect(Collectors.toList()),
-            s1.concat(s2).product().collect(Collectors.toList()));
+        Assert.assertEquals(result, s1.concat(s2).product().collect(AssignmentCollectors.toProbTable()));
     }
 
     @Test
     public void testParallelProductCase3() {
-        RandomVariable<Integer, Integer> a = RandomVariable.id(1)
+        RandomVariable<Integer, Integer> a = RandomVariable.label(1)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> b = RandomVariable.id(2)
+        RandomVariable<Integer, Integer> b = RandomVariable.label(2)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> c = RandomVariable.id(3)
+        RandomVariable<Integer, Integer> c = RandomVariable.label(3)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> d = RandomVariable.id(4)
+        RandomVariable<Integer, Integer> d = RandomVariable.label(4)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> e = RandomVariable.id(5)
+        RandomVariable<Integer, Integer> e = RandomVariable.label(5)
             .events(1, 2, 3)
             .build();
 
-        RandomVariable<Integer, Integer> f = RandomVariable.id(6)
+        RandomVariable<Integer, Integer> f = RandomVariable.label(6)
             .events(1, 2)
             .build();
 
-        RandomVariable<Integer, Integer> g = RandomVariable.id(7)
+        RandomVariable<Integer, Integer> g = RandomVariable.label(7)
             .events(1, 2)
             .build();
 
-        AssignmentStream s1 = AssignmentStream.builder()
+        AssignmentStream s1 = ProbTable.builder()
             .variables(b, a)
             .values(0.5d, 0.8d, 0.1d, 0d, 0.3d, 0.9d)
-            .build();
+            .build()
+            .stream()
+            .parallel();
 
-        AssignmentStream s2 = AssignmentStream.builder()
+        AssignmentStream s2 = ProbTable.builder()
             .variables(d, c)
             .values(0.5d, 0.7d, 0.1d, 0.2d)
-            .build();
+            .build()
+            .stream()
+            .parallel();
 
-        AssignmentStream s3 = AssignmentStream.builder()
+        AssignmentStream s3 = ProbTable.builder()
             .variables(e, f, g)
             .values(0.25d, 0.05d, 0.15d, 0.08d, 0d, 0.09d, 0.35d, 0.07d, 0.21d, 0.16d, 0d, 0.18d)
-            .build();
+            .build()
+            .stream()
+            .parallel();
 
-        AssignmentStream result = AssignmentStream.builder()
+        ProbTable result = ProbTable.builder()
             .variables(a, b, c, d, e, f, g)
             .values(0.06250, 0.01250, 0.03750, 0.10000, 0.00000, 0.11250)
             .values(0.01250, 0.00250, 0.00750, 0.02000, 0.00000, 0.02250)
@@ -352,10 +358,8 @@ public class ProductTest {
             .values(0.00900, 0.00180, 0.00540, 0.01440, 0.00000, 0.01620)
             .values(0.06300, 0.01260, 0.03780, 0.10080, 0.00000, 0.11340)
             .values(0.01800, 0.00360, 0.01080, 0.02880, 0.00000, 0.03240)
-            .build()
-            .parallel();
+            .build();
 
-        Assert.assertEquals(result.collect(Collectors.toSet()),
-            s1.concat(s2, s3).product().collect(Collectors.toSet()));
+        Assert.assertEquals(result, s1.concat(s2, s3).product().collect(AssignmentCollectors.toProbTable()));
     }
 }

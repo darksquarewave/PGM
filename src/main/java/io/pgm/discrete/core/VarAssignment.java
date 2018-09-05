@@ -67,7 +67,7 @@ public final class VarAssignment<T extends Comparable<T>, E> implements Serializ
 
     @Override
     public String toString() {
-        return "VariableAssignment(" + randomVariable.id() + "=" + event + ")";
+        return "VariableAssignment(" + randomVariable.label() + "=" + event + ")";
     }
 }
 

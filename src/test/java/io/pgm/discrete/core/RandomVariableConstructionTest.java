@@ -17,7 +17,7 @@ public class RandomVariableConstructionTest {
 
     @Test
     public void testConstruction() {
-        RandomVariable<VarType, IntelligenceType> a = RandomVariable.id(VarType.INTELLIGENCE)
+        RandomVariable<VarType, IntelligenceType> a = RandomVariable.label(VarType.INTELLIGENCE)
             .events(IntelligenceType.values())
             .build();
 

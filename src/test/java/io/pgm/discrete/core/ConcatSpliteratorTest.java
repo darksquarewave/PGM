@@ -1,4 +1,4 @@
-package io.pgm.core;
+package io.pgm.discrete.core;
 
 import org.junit.Assert;
 import org.junit.Test;

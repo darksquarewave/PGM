@@ -10,16 +10,21 @@ import java.util.stream.Collectors;
 public class AssignmentConstructionTest {
 
     @Test
-    public void testVarConstruction() {
-        AssignmentStream stream = AssignmentStream.builder()
-            .variable(RandomVariable.id("a").events(1, 2).build())
-            .variable(RandomVariable.id("b").events(1, 2).build())
+    public void testAssignmentConstruction() {
+        AssignmentStream stream = ProbTable.builder()
+            .variable(RandomVariable.label("a").events(1, 2).build())
+            .variable(RandomVariable.label("b").events(1, 2).build())
             .values(0.5d, 0.5d)
             .values(0.6d, 0.4d)
-            .build();
+            .build()
+            .stream();
 
         List<Assignment> list = stream.collect(Collectors.toList());
 
         Assert.assertEquals(4, list.size());
     }
+
 }
+
+
+

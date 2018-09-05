@@ -44,6 +44,8 @@ public interface AssignmentStream extends BaseStream<Assignment, AssignmentStrea
 
     void forEach(AssignmentConsumer action);
 
+    ProbTable toProbTable();
+
     static AssignmentStream of(Assignment ... assignments) {
         return new DefaultAssignmentStream(Stream.of(assignments));
     }
@@ -51,26 +53,5 @@ public interface AssignmentStream extends BaseStream<Assignment, AssignmentStrea
     @SuppressWarnings("unchecked")
     static AssignmentStream of(Collection<? extends Assignment> assignments) {
         return new DefaultAssignmentStream((Stream<Assignment>) assignments.stream());
-    }
-
-    static Builder builder() {
-        return new DefaultAssignmentStream.BuilderImpl();
-    }
-
-    interface Builder {
-
-        Builder variables(Collection<RandomVariable> randomVars);
-
-        Builder variables(RandomVariable ... randomVars);
-
-        Builder variable(RandomVariable randomVar);
-
-        Builder values(Collection<Double> values);
-
-        Builder values(double ... values);
-
-        Builder value(double value);
-
-        AssignmentStream build();
     }
 }

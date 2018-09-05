@@ -16,27 +16,27 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
 
     private static final long serialVersionUID = -4515022937413013557L;
 
-    private final T id;
+    private final T label;
     private final Collection<? extends E> eventSpace;
 
-    public static <T extends Comparable<T>> Builder<T> id(final T id) {
-        return new Builder<>(id);
+    public static <T extends Comparable<T>> Builder<T> label(final T label) {
+        return new Builder<>(label);
     }
 
     public static final class Builder<T extends Comparable<T>> {
 
-        private final T id;
+        private final T label;
 
-        private Builder(final T varId) {
-            this.id = varId;
+        private Builder(final T varLabel) {
+            label = varLabel;
         }
 
         public <E> RandomVarBuilder<T, E> event(final E event) {
-            return new RandomVarBuilder<>(id, event);
+            return new RandomVarBuilder<>(label, event);
         }
 
         public <E> RandomVarBuilder<T, E> events(final Collection<? extends E> events) {
-            return new RandomVarBuilder<>(id, events);
+            return new RandomVarBuilder<>(label, events);
         }
 
         @SafeVarargs
@@ -46,26 +46,26 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
             if (rest.length > 0) {
                 events.addAll(Arrays.asList(rest));
             }
-            return new RandomVarBuilder<>(id, events);
+            return new RandomVarBuilder<>(label, events);
         }
 
         public <E> RandomVarBuilder<T, E> events(final E[] events) {
-            return new RandomVarBuilder<>(id, Arrays.asList(events));
+            return new RandomVarBuilder<>(label, Arrays.asList(events));
         }
     }
 
     public static final class RandomVarBuilder<T extends Comparable<T>, E> {
 
-        private final T id;
+        private final T label;
         private final List<E> events = new ArrayList<>();
 
-        private RandomVarBuilder(final T varId, final E varEvent) {
-            id = varId;
+        private RandomVarBuilder(final T varLabel, final E varEvent) {
+            label = varLabel;
             events.add(varEvent);
         }
 
-        private RandomVarBuilder(final T varId, final Collection<? extends E> varEvents) {
-            id = varId;
+        private RandomVarBuilder(final T varLabel, final Collection<? extends E> varEvents) {
+            label = varLabel;
             events.addAll(varEvents);
         }
 
@@ -90,12 +90,15 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
     }
 
     private RandomVariable(final RandomVarBuilder<T, E> builder) {
-        this.id = builder.id;
+        this.label = builder.label;
+        if (builder.events.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
         this.eventSpace = Collections.unmodifiableCollection(builder.events);
     }
 
-    public T id() {
-        return id;
+    public T label() {
+        return label;
     }
 
     public Collection<? extends E> eventSpace() {
@@ -143,7 +146,7 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
 
         RandomVariable<?, ?> that = (RandomVariable<?, ?>) obj;
 
-        boolean equals = Objects.equals(id, that.id);
+        boolean equals = Objects.equals(label, that.label);
 
         if (equals && !Objects.equals(eventSpace, that.eventSpace)) {
             throw new IllegalStateException("Two equal random variables with different event spaces");
@@ -154,18 +157,16 @@ public final class RandomVariable<T extends Comparable<T>, E> implements
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(label);
     }
 
     @Override
     public String toString() {
-        return "RandomVar(id=" + id + ", card=" + cardinality() + ")";
+        return "RandomVar(label=" + label + ", card=" + cardinality() + ")";
     }
 
     @Override
     public int compareTo(final RandomVariable<T, E> randomVariable) {
-        return id.compareTo(randomVariable.id);
+        return label.compareTo(randomVariable.label);
     }
-
 }
-

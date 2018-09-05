@@ -116,7 +116,7 @@ public final class MultiVarAssignment implements Comparable<MultiVarAssignment>,
     @Override
     public String toString() {
         String result = assignments.values().stream()
-                .map(assignment -> assignment.randomVariable().id() + "=" + assignment.event())
+                .map(assignment -> assignment.randomVariable().label() + "=" + assignment.event())
                 .collect(Collectors.joining(", "));
 
         return "MultiVarAssignment(" + result + ")";

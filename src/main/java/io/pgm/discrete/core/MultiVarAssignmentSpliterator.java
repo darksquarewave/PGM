@@ -14,7 +14,7 @@ final class MultiVarAssignmentSpliterator implements Spliterator<MultiVarAssignm
         this(vars, 0, AssignmentUtils.cardinality(vars));
     }
 
-    MultiVarAssignmentSpliterator(final Collection<? extends RandomVariable> vars, final int i, final int f) {
+    private MultiVarAssignmentSpliterator(final Collection<? extends RandomVariable> vars, final int i, final int f) {
         randomVars = vars;
         index = i;
         fence = f;

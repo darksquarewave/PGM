@@ -1,9 +1,9 @@
-package io.pgm.core;
+package io.pgm.discrete.core;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public final class UtilitySpliterators {
+final class UtilitySpliterators {
 
    public static final class ConcatSpliterator<T, S extends Spliterator<T>> implements Spliterator<T> {
 
@@ -13,7 +13,7 @@ public final class UtilitySpliterators {
         private final boolean unsized;
 
         @SafeVarargs
-        public ConcatSpliterator(final S ... s) {
+        ConcatSpliterator(final S ... s) {
             spliterators = s;
             fence = s.length;
 

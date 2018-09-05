@@ -2,6 +2,7 @@ package io.pgm.discrete.core;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -12,9 +13,13 @@ final class AssignmentSpliterator implements Spliterator<Assignment> {
     private final List<? extends Double> values;
     private @Nullable MultiVarAssignment current;
 
-    AssignmentSpliterator(final MultiVarAssignmentSpliterator s, final List<? extends Double> v) {
-        source = s;
-        values = v;
+    AssignmentSpliterator(final Collection<? extends RandomVariable> vars, final List<? extends Double> vals) {
+        this(new MultiVarAssignmentSpliterator(vars), vals);
+    }
+
+    private AssignmentSpliterator(final MultiVarAssignmentSpliterator split, final List<? extends Double> vals) {
+        source = split;
+        values = vals;
     }
 
     private void setVarAssignment(final MultiVarAssignment ga) {
